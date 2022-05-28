@@ -7,4 +7,4 @@ class Compiler:
         with open(fname) as f:
             raw = f.read()
        
-        self.lexer.parse(raw)
+        self.lexer.tokenize(raw)

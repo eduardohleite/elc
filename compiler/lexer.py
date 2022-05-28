@@ -38,7 +38,7 @@ class Lexer:
     def build(self, **kwargs):
         self.lexer = lex(module=self, **kwargs)
 
-    def parse(self, text):
+    def tokenize(self, text):
         self.lexer.input(text)
 
         while True:
