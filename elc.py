@@ -1,12 +1,9 @@
 import argparse
 
-import compiler.lexer as lexer_module
-
-from ply.lex import lex
-from compiler import Compiler
+from compiler import Compiler, Lexer
 
 
-compiler = Compiler(lex(module=lexer_module))
+compiler = Compiler(Lexer())
 
 
 if __name__ == '__main__':
