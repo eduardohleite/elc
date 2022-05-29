@@ -6,6 +6,14 @@ build: gen-lang
 	mkdir -p out
 	g++ -Isrc -o out/elc src/gen/parser.cpp src/gen/tokens.cpp src/main.cpp
 
+debug-build: gen-lang
+	mkdir -p out
+	g++ -Isrc -g -o out/elc \
+		src/gen/parser.cpp \
+		src/gen/tokens.cpp \
+		src/vm.cpp \
+		src/main.cpp
+
 clean:
 	rm -f out/*
 	rm -f src/gen/*

@@ -12,13 +12,11 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
     ELang::Meta::Block *block;
     ELang::Meta::Expression *expression;
     ELang::Meta::Statement *statement;
-    //std::vector<ELang::Meta::Expression*> *expression_vec;
     std::string *string;
     int token;
 }
 
 %token <string> TINTEGER
-//%token <token> TLPAREN TRPAREN
 %token <token> TPLUS TMINUS TMUL TDIV
 
 %type <expression> numeric expression

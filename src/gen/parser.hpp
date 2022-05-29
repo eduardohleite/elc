@@ -67,11 +67,10 @@ union YYSTYPE
     ELang::Meta::Block *block;
     ELang::Meta::Expression *expression;
     ELang::Meta::Statement *statement;
-    //std::vector<ELang::Meta::Expression*> *expression_vec;
     std::string *string;
     int token;
 
-#line 75 "src/gen/parser.hpp"
+#line 74 "src/gen/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

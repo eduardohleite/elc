@@ -141,11 +141,10 @@ union YYSTYPE
     ELang::Meta::Block *block;
     ELang::Meta::Expression *expression;
     ELang::Meta::Statement *statement;
-    //std::vector<ELang::Meta::Expression*> *expression_vec;
     std::string *string;
     int token;
 
-#line 149 "src/gen/parser.cpp"
+#line 148 "src/gen/parser.cpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -521,8 +520,8 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    36,    36,    39,    40,    43,    46,    49,    50,    53,
-      54,    55,    56
+       0,    34,    34,    37,    38,    41,    44,    47,    48,    51,
+      52,    53,    54
 };
 #endif
 
@@ -1313,43 +1312,43 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 36 "src/lang/parser.y"
+#line 34 "src/lang/parser.y"
                      { main_block = (yyvsp[0].block); }
-#line 1319 "src/gen/parser.cpp"
+#line 1318 "src/gen/parser.cpp"
     break;
 
   case 3:
-#line 39 "src/lang/parser.y"
+#line 37 "src/lang/parser.y"
                        { (yyval.block) = new ELang::Meta::Block(); (yyval.block)->statements.push_back((yyvsp[0].statement)); }
-#line 1325 "src/gen/parser.cpp"
+#line 1324 "src/gen/parser.cpp"
     break;
 
   case 4:
-#line 40 "src/lang/parser.y"
+#line 38 "src/lang/parser.y"
                                   { (yyvsp[-1].block)->statements.push_back((yyvsp[0].statement)); }
-#line 1331 "src/gen/parser.cpp"
+#line 1330 "src/gen/parser.cpp"
     break;
 
   case 5:
-#line 43 "src/lang/parser.y"
+#line 41 "src/lang/parser.y"
                        { (yyval.statement) = new ELang::Meta::ExpressionStatement(*(yyvsp[0].expression)); }
-#line 1337 "src/gen/parser.cpp"
+#line 1336 "src/gen/parser.cpp"
     break;
 
   case 6:
-#line 46 "src/lang/parser.y"
+#line 44 "src/lang/parser.y"
                    { (yyval.expression) = new ELang::Meta::Integer(atol((yyvsp[0].string)->c_str())); delete (yyvsp[0].string); }
-#line 1343 "src/gen/parser.cpp"
+#line 1342 "src/gen/parser.cpp"
     break;
 
   case 8:
-#line 50 "src/lang/parser.y"
+#line 48 "src/lang/parser.y"
                                              { (yyval.expression) = new ELang::Meta::ArithmeticOperator(*(yyvsp[-2].expression), (yyvsp[-1].token), *(yyvsp[0].expression)); }
-#line 1349 "src/gen/parser.cpp"
+#line 1348 "src/gen/parser.cpp"
     break;
 
 
-#line 1353 "src/gen/parser.cpp"
+#line 1352 "src/gen/parser.cpp"
 
       default: break;
     }
@@ -1581,4 +1580,4 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 59 "src/lang/parser.y"
+#line 57 "src/lang/parser.y"
