@@ -1343,7 +1343,7 @@ yyreduce:
 
   case 8:
 #line 48 "src/lang/parser.y"
-                                             { (yyval.expression) = new ELang::Meta::ArithmeticOperator(*(yyvsp[-2].expression), (yyvsp[-1].token), *(yyvsp[0].expression)); }
+                                             { (yyval.expression) = new ELang::Meta::ArithmeticExpression(*(yyvsp[-2].expression), (yyvsp[-1].token), *(yyvsp[0].expression)); }
 #line 1348 "src/gen/parser.cpp"
     break;
 

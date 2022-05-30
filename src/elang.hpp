@@ -23,12 +23,12 @@ public:
     Integer(long value): value(value) { }
 };
 
-class ArithmeticOperator: public Expression {
+class ArithmeticExpression: public Expression {
 public:
     int op;
     Expression& lhs;
     Expression& rhs;
-    ArithmeticOperator(Expression& lhs, int op, Expression& rhs):
+    ArithmeticExpression(Expression& lhs, int op, Expression& rhs):
         lhs(lhs), op(op), rhs(rhs) { }
 };
 
