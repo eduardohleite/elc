@@ -23,6 +23,12 @@ public:
     Integer(long value): value(value) { }
 };
 
+class Float: public Expression {
+public:
+    double value;
+    Float(double value): value(value) { }
+};
+
 class ArithmeticExpression: public Expression {
 public:
     int op;

@@ -33,7 +33,7 @@ long Interpreter::eval_expression(const Expression &expression) const {
 
     auto int_expr = dynamic_cast<const Integer *>(expr_ptr);
     if (nullptr != int_expr) {
-        return int_expr->value;        
+        return int_expr->value;
     }
 }
 

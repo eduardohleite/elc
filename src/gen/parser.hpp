@@ -40,22 +40,24 @@
       know about them.  */
    enum yytokentype {
      TINTEGER = 258,
-     TLPAREN = 259,
-     TRPAREN = 260,
-     TPLUS = 261,
-     TMINUS = 262,
-     TMUL = 263,
-     TDIV = 264
+     TFLOAT = 259,
+     TLPAREN = 260,
+     TRPAREN = 261,
+     TPLUS = 262,
+     TMINUS = 263,
+     TMUL = 264,
+     TDIV = 265
    };
 #endif
 /* Tokens.  */
 #define TINTEGER 258
-#define TLPAREN 259
-#define TRPAREN 260
-#define TPLUS 261
-#define TMINUS 262
-#define TMUL 263
-#define TDIV 264
+#define TFLOAT 259
+#define TLPAREN 260
+#define TRPAREN 261
+#define TPLUS 262
+#define TMINUS 263
+#define TMUL 264
+#define TDIV 265
 
 
 
@@ -72,7 +74,7 @@ typedef union YYSTYPE
     int token;
 }
 /* Line 1529 of yacc.c.  */
-#line 76 "src/gen/parser.hpp"
+#line 78 "src/gen/parser.hpp"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1

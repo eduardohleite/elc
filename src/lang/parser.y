@@ -16,7 +16,7 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
     int token;
 }
 
-%token <string> TINTEGER
+%token <string> TINTEGER TFLOAT
 %token <token> TLPAREN TRPAREN
 %token <token> TPLUS TMINUS TMUL TDIV
 
@@ -32,28 +32,29 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 
 %%
 
-program : statements { main_block = $1; }
-        ;
+program    : statements { main_block = $1; }
+           ;
 
 statements : statement { $$ = new ELang::Meta::Block(); $$->statements.push_back($<statement>1); }
            | statements statement { $1->statements.push_back($<statement>2); }
            ;
 
-statement : expression { $$ = new ELang::Meta::ExpressionStatement(*$1); }
-          ;
+statement  : expression { $$ = new ELang::Meta::ExpressionStatement(*$1); }
+           ;
 
-numeric : TINTEGER { $$ = new ELang::Meta::Integer(atol($1->c_str())); delete $1; }
-        ;
+numeric    : TINTEGER { $$ = new ELang::Meta::Integer(atol($1->c_str())); delete $1; }
+           | TFLOAT { $$ = new ELang::Meta::Float(atof($1->c_str())); delete $1; }
+           ;
 
-expression: numeric
-          | expression arithmetic expression { $$ = new ELang::Meta::ArithmeticExpression(*$1, $2, *$3); }
-          | TLPAREN expression TRPAREN { $$ = $2; }
-          ;
+expression : numeric
+           | expression arithmetic expression { $$ = new ELang::Meta::ArithmeticExpression(*$1, $2, *$3); }
+           | TLPAREN expression TRPAREN { $$ = $2; }
+           ;
 
-arithmetic: TPLUS
-          | TMINUS
-          | TMUL
-          | TDIV
-          ;
+arithmetic : TPLUS
+           | TMINUS
+           | TMUL
+           | TDIV
+           ;
 
 %%
