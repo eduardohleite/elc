@@ -14,6 +14,9 @@ extern "C" int yywrap() { }
 
 [0-9]+ SAVE_TOKEN; return TINTEGER;
 
+"(" return TOKEN(TLPAREN);
+")" return TOKEN(TRPAREN);
+
 "+" return TOKEN(TPLUS);
 "-" return TOKEN(TMINUS);
 "*" return TOKEN(TMUL);

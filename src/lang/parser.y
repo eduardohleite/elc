@@ -17,6 +17,7 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 }
 
 %token <string> TINTEGER
+%token <token> TLPAREN TRPAREN
 %token <token> TPLUS TMINUS TMUL TDIV
 
 %type <expression> numeric expression
@@ -46,6 +47,7 @@ numeric : TINTEGER { $$ = new ELang::Meta::Integer(atol($1->c_str())); delete $1
 
 expression: numeric
           | expression arithmetic expression { $$ = new ELang::Meta::ArithmeticExpression(*$1, $2, *$3); }
+          | TLPAREN expression TRPAREN { $$ = $2; }
           ;
 
 arithmetic: TPLUS
