@@ -34,8 +34,12 @@ Value Interpreter::eval_expression(const Expression& expression) const {
     if (nullptr != int_expr) {
         return int_expr->value;
     }
-}
 
+    auto float_expr = dynamic_cast<const Float*>(expr_ptr);
+    if (nullptr != float_expr) {
+        return float_expr->value;
+    }
+}
 
 void Interpreter::run(const Block* program) const {
     for (auto it = program->statements.begin(); it != program->statements.end(); it++) {
@@ -45,7 +49,22 @@ void Interpreter::run(const Block* program) const {
         auto expression_statement = dynamic_cast<ExpressionStatement*>(statement);
         if (nullptr != expression_statement) {
             auto res = eval_expression(expression_statement->expression);
-            cout << "Evaluated: " << std::get<long>(res.value) << endl;
+            print_value(res);
         }
     }
+}
+
+void Interpreter::print_value(const Value& v) const {
+    cout << "Evaluated: ";
+
+    switch (v.type) {
+        case Type::Integer:
+            cout << std::get<long>(v.value) << " (type: Integer)";
+            break;
+        case Type::Float:
+            cout << std::get<double>(v.value) << " (type: Float)";
+            break;
+    }
+
+    cout << endl;
 }

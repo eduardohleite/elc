@@ -16,11 +16,11 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
     int token;
 }
 
-%token <string> TINTEGER
+%token <string> TINTEGER TFLOAT
 %token <token> TLPAREN TRPAREN
 %token <token> TPLUS TMINUS TMUL TDIV
 
-%type <expression> numeric expression
+%type <expression> number expression
 %type <block> program statements
 %type <statement> statement
 %type <token> arithmetic
@@ -42,10 +42,11 @@ statements : statement { $$ = new ELang::Meta::Block(); $$->statements.push_back
 statement  : expression { $$ = new ELang::Meta::ExpressionStatement(*$1); }
            ;
 
-numeric    : TINTEGER { $$ = new ELang::Meta::Integer(atol($1->c_str())); delete $1; }
+number     : TINTEGER { $$ = new ELang::Meta::Integer(atol($1->c_str())); delete $1; }
+           | TFLOAT { $$ = new ELang::Meta::Float(atof($1->c_str())); delete $1; }
            ;
 
-expression : numeric
+expression : number
            | expression arithmetic expression { $$ = new ELang::Meta::ArithmeticExpression(*$1, $2, *$3); }
            | TLPAREN expression TRPAREN { $$ = $2; }
            ;

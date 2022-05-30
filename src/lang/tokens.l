@@ -12,7 +12,8 @@ extern "C" int yywrap() { }
 
 [ \t\n] ;
 
-[0-9]+ SAVE_TOKEN; return TINTEGER;
+[0-9]+\.[0-9]* SAVE_TOKEN; return TFLOAT;
+[0-9]+        SAVE_TOKEN; return TINTEGER;
 
 "(" return TOKEN(TLPAREN);
 ")" return TOKEN(TRPAREN);
@@ -22,6 +23,6 @@ extern "C" int yywrap() { }
 "*" return TOKEN(TMUL);
 "/" return TOKEN(TDIV);
 
-. printf("Unknown token!n"); yyterminate();
+. printf("Invalid token."); yyterminate();
 
 %%
