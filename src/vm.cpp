@@ -7,11 +7,11 @@ using namespace ELang::Meta;
 using namespace std;
 
 
-long Interpreter::eval_expression(const Expression &expression) const {
+long Interpreter::eval_expression(const Expression& expression) const {
     // check for expression types
     auto expr_ptr = &expression;
 
-    auto arithmetic_expr = dynamic_cast<const ArithmeticExpression *>(expr_ptr);
+    auto arithmetic_expr = dynamic_cast<const ArithmeticExpression*>(expr_ptr);
     if (nullptr != arithmetic_expr) {
         auto lhs_value = eval_expression(arithmetic_expr->lhs);
         auto rhs_value = eval_expression(arithmetic_expr->rhs);
@@ -31,19 +31,22 @@ long Interpreter::eval_expression(const Expression &expression) const {
         }
     }
 
-    auto int_expr = dynamic_cast<const Integer *>(expr_ptr);
+    auto int_expr = dynamic_cast<const Integer*>(expr_ptr);
     if (nullptr != int_expr) {
         return int_expr->value;
     }
+
+    auto float_expr = dynamic_cast<const Float*>(expr_ptr);
+    auto i = 0;
 }
 
 
-void Interpreter::run(const Block *program) const {
+void Interpreter::run(const Block* program) const {
     for (auto it = program->statements.begin(); it != program->statements.end(); it++) {
         auto statement = *it;
 
         // check for statement types
-        auto expression_statement = dynamic_cast<ExpressionStatement *>(statement);
+        auto expression_statement = dynamic_cast<ExpressionStatement*>(statement);
         if (nullptr != expression_statement) {
             auto res = eval_expression(expression_statement->expression);
             cout << "Evaluated: " << res << endl;

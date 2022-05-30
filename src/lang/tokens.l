@@ -13,7 +13,6 @@ extern "C" int yywrap() { }
 [ \t\n] ;
 
 [0-9]+ SAVE_TOKEN; return TINTEGER;
-[0-9]+.[0-9]* SAVE_TOKEN; return TFLOAT;
 
 "(" return TOKEN(TLPAREN);
 ")" return TOKEN(TRPAREN);

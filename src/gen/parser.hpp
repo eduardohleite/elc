@@ -1,14 +1,14 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+/* A Bison parser, made by GNU Bison 3.5.1.  */
 
-/* Skeleton interface for Bison's Yacc-like parsers in C
+/* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2020 Free Software Foundation,
+   Inc.
 
-   This program is free software; you can redistribute it and/or modify
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,9 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -33,53 +31,59 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* Tokens.  */
+/* Undocumented macros, especially those whose name start with YY_,
+   are private implementation details.  Do not rely on them.  */
+
+#ifndef YY_YY_SRC_GEN_PARSER_HPP_INCLUDED
+# define YY_YY_SRC_GEN_PARSER_HPP_INCLUDED
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int yydebug;
+#endif
+
+/* Token type.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     TINTEGER = 258,
-     TFLOAT = 259,
-     TLPAREN = 260,
-     TRPAREN = 261,
-     TPLUS = 262,
-     TMINUS = 263,
-     TMUL = 264,
-     TDIV = 265
-   };
+  enum yytokentype
+  {
+    TINTEGER = 258,
+    TFLOAT = 259,
+    TLPAREN = 260,
+    TRPAREN = 261,
+    TPLUS = 262,
+    TMINUS = 263,
+    TMUL = 264,
+    TDIV = 265
+  };
 #endif
-/* Tokens.  */
-#define TINTEGER 258
-#define TFLOAT 259
-#define TLPAREN 260
-#define TRPAREN 261
-#define TPLUS 262
-#define TMINUS 263
-#define TMUL 264
-#define TDIV 265
 
-
-
-
+/* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-#line 10 "src/lang/parser.y"
+union YYSTYPE
 {
+#line 10 "src/lang/parser.y"
+
     ELang::Meta::Node *node;
     ELang::Meta::Block *block;
     ELang::Meta::Expression *expression;
     ELang::Meta::Statement *statement;
     std::string *string;
     int token;
-}
-/* Line 1529 of yacc.c.  */
-#line 78 "src/gen/parser.hpp"
-	YYSTYPE;
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
+
+#line 77 "src/gen/parser.hpp"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
 #endif
+
 
 extern YYSTYPE yylval;
 
+int yyparse (void);
+
+#endif /* !YY_YY_SRC_GEN_PARSER_HPP_INCLUDED  */

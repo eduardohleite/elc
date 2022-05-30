@@ -43,7 +43,6 @@ statement  : expression { $$ = new ELang::Meta::ExpressionStatement(*$1); }
            ;
 
 numeric    : TINTEGER { $$ = new ELang::Meta::Integer(atol($1->c_str())); delete $1; }
-           | TFLOAT { $$ = new ELang::Meta::Float(atof($1->c_str())); delete $1; }
            ;
 
 expression : numeric
