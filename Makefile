@@ -8,7 +8,8 @@ build: gen-lang
 
 debug-build: gen-lang
 	mkdir -p out
-	g++ -Isrc -g -o out/elc \
+	g++ -Isrc -std=c++17 \
+		-g -o out/elc \
 		src/gen/parser.cpp \
 		src/gen/tokens.cpp \
 		src/vm.cpp \
