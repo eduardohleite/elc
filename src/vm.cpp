@@ -8,12 +8,12 @@ using namespace std;
 
 Value Interpreter::eval_expression(const Expression& expression) const {
     // check for expression types
-    auto expr_ptr = &expression;
+    const auto expr_ptr = &expression;
 
-    auto arithmetic_expr = dynamic_cast<const ArithmeticExpression*>(expr_ptr);
+    const auto arithmetic_expr = dynamic_cast<const ArithmeticExpression*>(expr_ptr);
     if (nullptr != arithmetic_expr) {
-        auto lhs_value = eval_expression(arithmetic_expr->lhs);
-        auto rhs_value = eval_expression(arithmetic_expr->rhs);
+        const auto lhs_value = eval_expression(arithmetic_expr->lhs);
+        const auto rhs_value = eval_expression(arithmetic_expr->rhs);
 
         switch (arithmetic_expr->op) {
             case TPLUS:
@@ -30,12 +30,12 @@ Value Interpreter::eval_expression(const Expression& expression) const {
         }
     }
 
-    auto int_expr = dynamic_cast<const Integer*>(expr_ptr);
+    const auto int_expr = dynamic_cast<const Integer*>(expr_ptr);
     if (nullptr != int_expr) {
         return int_expr->value;
     }
 
-    auto float_expr = dynamic_cast<const Float*>(expr_ptr);
+    const auto float_expr = dynamic_cast<const Float*>(expr_ptr);
     if (nullptr != float_expr) {
         return float_expr->value;
     }
@@ -43,12 +43,12 @@ Value Interpreter::eval_expression(const Expression& expression) const {
 
 void Interpreter::run(const Block* program) const {
     for (auto it = program->statements.begin(); it != program->statements.end(); it++) {
-        auto statement = *it;
+        const auto statement = *it;
 
         // check for statement types
-        auto expression_statement = dynamic_cast<ExpressionStatement*>(statement);
+        const auto expression_statement = dynamic_cast<ExpressionStatement*>(statement);
         if (nullptr != expression_statement) {
-            auto res = eval_expression(expression_statement->expression);
+            const auto res = eval_expression(expression_statement->expression);
             print_value(res);
         }
     }
