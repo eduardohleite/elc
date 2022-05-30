@@ -8,19 +8,23 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 %}
 
 %union {
-    ELang::Meta::Node *node;
-    ELang::Meta::Block *block;
-    ELang::Meta::Expression *expression;
-    ELang::Meta::Statement *statement;
-    std::string *string;
+    ELang::Meta::Node* node;
+    ELang::Meta::Block* block;
+    ELang::Meta::Expression* expression;
+    ELang::Meta::Statement* statement;
+    ELang::Meta::Identifier* identifier;
+    std::vector<ELang::Meta::Expression*> *expressions;
+    std::string* string;
     int token;
 }
 
-%token <string> TINTEGER TFLOAT
-%token <token> TLPAREN TRPAREN
+%token <string> TIDENTIFIER TINTEGER TFLOAT
+%token <token> TLPAREN TRPAREN TCOMMA
 %token <token> TPLUS TMINUS TMUL TDIV
 
+%type <identifier> identifier
 %type <expression> number expression
+%type <expressions> arguments
 %type <block> program statements
 %type <statement> statement
 %type <token> arithmetic
@@ -42,6 +46,9 @@ statements : statement { $$ = new ELang::Meta::Block(); $$->statements.push_back
 statement  : expression { $$ = new ELang::Meta::ExpressionStatement(*$1); }
            ;
 
+identifier : TIDENTIFIER { $$ = new ELang::Meta::Identifier(*$1); delete $1; }
+           ;
+
 number     : TINTEGER { $$ = new ELang::Meta::Integer(atol($1->c_str())); delete $1; }
            | TFLOAT { $$ = new ELang::Meta::Float(atof($1->c_str())); delete $1; }
            ;
@@ -49,6 +56,11 @@ number     : TINTEGER { $$ = new ELang::Meta::Integer(atol($1->c_str())); delete
 expression : number
            | expression arithmetic expression { $$ = new ELang::Meta::ArithmeticExpression(*$1, $2, *$3); }
            | TLPAREN expression TRPAREN { $$ = $2; }
+           ;
+
+arguments  : { $$ = new ExpressionList(); }
+           | expression { $$ = new ExpressionList(); $$->push_back($1); }
+           | arguments TCOMMA expression { $1->push_back($3); }
            ;
 
 arithmetic : TPLUS

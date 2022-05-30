@@ -51,5 +51,22 @@ public:
     Block() { }
 };
 
+class Identifier: public Expression {
+public:
+    std::string name;
+
+    Identifier(const std::string& name): name(name) { }
+};
+
+class FunctionCall: public Expression {
+public:
+    const Identifier& id;
+    std::vector<Expression*> arguments;
+
+    FunctionCall(const Identifier& id, std::vector<Expression*>& arguments):
+        id(id), arguments(arguments) { }
+    FunctionCall(const Identifier& id): id(id) { }
+};
+
 } // namespace Meta
 } // namespace ELang

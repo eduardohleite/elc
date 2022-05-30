@@ -49,14 +49,16 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    TINTEGER = 258,
-    TFLOAT = 259,
-    TLPAREN = 260,
-    TRPAREN = 261,
-    TPLUS = 262,
-    TMINUS = 263,
-    TMUL = 264,
-    TDIV = 265
+    TIDENTIFIER = 258,
+    TINTEGER = 259,
+    TFLOAT = 260,
+    TLPAREN = 261,
+    TRPAREN = 262,
+    TCOMMA = 263,
+    TPLUS = 264,
+    TMINUS = 265,
+    TMUL = 266,
+    TDIV = 267
   };
 #endif
 
@@ -66,14 +68,16 @@ union YYSTYPE
 {
 #line 10 "src/lang/parser.y"
 
-    ELang::Meta::Node *node;
-    ELang::Meta::Block *block;
-    ELang::Meta::Expression *expression;
-    ELang::Meta::Statement *statement;
-    std::string *string;
+    ELang::Meta::Node* node;
+    ELang::Meta::Block* block;
+    ELang::Meta::Expression* expression;
+    ELang::Meta::Statement* statement;
+    ELang::Meta::Identifier* identifier;
+    std::vector<ELang::Meta::Expression*> *expressions;
+    std::string* string;
     int token;
 
-#line 77 "src/gen/parser.hpp"
+#line 81 "src/gen/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

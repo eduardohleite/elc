@@ -123,14 +123,16 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    TINTEGER = 258,
-    TFLOAT = 259,
-    TLPAREN = 260,
-    TRPAREN = 261,
-    TPLUS = 262,
-    TMINUS = 263,
-    TMUL = 264,
-    TDIV = 265
+    TIDENTIFIER = 258,
+    TINTEGER = 259,
+    TFLOAT = 260,
+    TLPAREN = 261,
+    TRPAREN = 262,
+    TCOMMA = 263,
+    TPLUS = 264,
+    TMINUS = 265,
+    TMUL = 266,
+    TDIV = 267
   };
 #endif
 
@@ -140,14 +142,16 @@ union YYSTYPE
 {
 #line 10 "src/lang/parser.y"
 
-    ELang::Meta::Node *node;
-    ELang::Meta::Block *block;
-    ELang::Meta::Expression *expression;
-    ELang::Meta::Statement *statement;
-    std::string *string;
+    ELang::Meta::Node* node;
+    ELang::Meta::Block* block;
+    ELang::Meta::Expression* expression;
+    ELang::Meta::Statement* statement;
+    ELang::Meta::Identifier* identifier;
+    std::vector<ELang::Meta::Expression*> *expressions;
+    std::string* string;
     int token;
 
-#line 151 "src/gen/parser.cpp"
+#line 155 "src/gen/parser.cpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -466,10 +470,10 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  10
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   15
+#define YYLAST   16
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  11
+#define YYNTOKENS  13
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  7
 /* YYNRULES -- Number of rules.  */
@@ -478,7 +482,7 @@ union yyalloc
 #define YYNSTATES  19
 
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   265
+#define YYMAXUTOK   267
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -516,15 +520,15 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9,    10
+       5,     6,     7,     8,     9,    10,    11,    12
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    35,    35,    38,    39,    42,    45,    46,    49,    50,
-      51,    54,    55,    56,    57
+       0,    39,    39,    42,    43,    46,    52,    53,    56,    57,
+      58,    66,    67,    68,    69
 };
 #endif
 
@@ -533,9 +537,10 @@ static const yytype_int8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "TINTEGER", "TFLOAT", "TLPAREN",
-  "TRPAREN", "TPLUS", "TMINUS", "TMUL", "TDIV", "$accept", "program",
-  "statements", "statement", "number", "expression", "arithmetic", YY_NULLPTR
+  "$end", "error", "$undefined", "TIDENTIFIER", "TINTEGER", "TFLOAT",
+  "TLPAREN", "TRPAREN", "TCOMMA", "TPLUS", "TMINUS", "TMUL", "TDIV",
+  "$accept", "program", "statements", "statement", "number", "expression",
+  "arithmetic", YY_NULLPTR
 };
 #endif
 
@@ -545,11 +550,11 @@ static const char *const yytname[] =
 static const yytype_int16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265
+     265,   266,   267
 };
 # endif
 
-#define YYPACT_NINF (-6)
+#define YYPACT_NINF (-7)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -563,8 +568,8 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       7,    -6,    -6,     7,    14,     7,    -6,    -6,    -1,    -5,
-      -6,    -6,    -6,    -6,    -6,    -6,     7,    -6,    -1
+      10,    -7,    -7,    10,     2,    10,    -7,    -7,    -2,    -6,
+      -7,    -7,    -7,    -7,    -7,    -7,    10,    -7,    -2
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -579,7 +584,7 @@ static const yytype_int8 yydefact[] =
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -6,    -6,    -6,    10,    -6,    -3,    -6
+      -7,    -7,    -7,     6,    -7,    -3,    -7
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -593,29 +598,29 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       9,    17,    12,    13,    14,    15,    12,    13,    14,    15,
-       1,     2,     3,    18,    10,    11
+       9,    17,    10,    12,    13,    14,    15,    12,    13,    14,
+      15,    11,     0,    18,     1,     2,     3
 };
 
 static const yytype_int8 yycheck[] =
 {
-       3,     6,     7,     8,     9,    10,     7,     8,     9,    10,
-       3,     4,     5,    16,     0,     5
+       3,     7,     0,     9,    10,    11,    12,     9,    10,    11,
+      12,     5,    -1,    16,     4,     5,     6
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     4,     5,    12,    13,    14,    15,    16,    16,
-       0,    14,     7,     8,     9,    10,    17,     6,    16
+       0,     4,     5,     6,    14,    15,    16,    17,    18,    18,
+       0,    16,     9,    10,    11,    12,    19,     7,    18
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    11,    12,    13,    13,    14,    15,    15,    16,    16,
-      16,    17,    17,    17,    17
+       0,    13,    14,    15,    15,    16,    17,    17,    18,    18,
+      18,    19,    19,    19,    19
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -1318,55 +1323,55 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 35 "src/lang/parser.y"
+#line 39 "src/lang/parser.y"
                         { main_block = (yyvsp[0].block); }
-#line 1324 "src/gen/parser.cpp"
+#line 1329 "src/gen/parser.cpp"
     break;
 
   case 3:
-#line 38 "src/lang/parser.y"
+#line 42 "src/lang/parser.y"
                        { (yyval.block) = new ELang::Meta::Block(); (yyval.block)->statements.push_back((yyvsp[0].statement)); }
-#line 1330 "src/gen/parser.cpp"
+#line 1335 "src/gen/parser.cpp"
     break;
 
   case 4:
-#line 39 "src/lang/parser.y"
+#line 43 "src/lang/parser.y"
                                   { (yyvsp[-1].block)->statements.push_back((yyvsp[0].statement)); }
-#line 1336 "src/gen/parser.cpp"
+#line 1341 "src/gen/parser.cpp"
     break;
 
   case 5:
-#line 42 "src/lang/parser.y"
+#line 46 "src/lang/parser.y"
                         { (yyval.statement) = new ELang::Meta::ExpressionStatement(*(yyvsp[0].expression)); }
-#line 1342 "src/gen/parser.cpp"
+#line 1347 "src/gen/parser.cpp"
     break;
 
   case 6:
-#line 45 "src/lang/parser.y"
+#line 52 "src/lang/parser.y"
                       { (yyval.expression) = new ELang::Meta::Integer(atol((yyvsp[0].string)->c_str())); delete (yyvsp[0].string); }
-#line 1348 "src/gen/parser.cpp"
+#line 1353 "src/gen/parser.cpp"
     break;
 
   case 7:
-#line 46 "src/lang/parser.y"
+#line 53 "src/lang/parser.y"
                     { (yyval.expression) = new ELang::Meta::Float(atof((yyvsp[0].string)->c_str())); delete (yyvsp[0].string); }
-#line 1354 "src/gen/parser.cpp"
+#line 1359 "src/gen/parser.cpp"
     break;
 
   case 9:
-#line 50 "src/lang/parser.y"
+#line 57 "src/lang/parser.y"
                                               { (yyval.expression) = new ELang::Meta::ArithmeticExpression(*(yyvsp[-2].expression), (yyvsp[-1].token), *(yyvsp[0].expression)); }
-#line 1360 "src/gen/parser.cpp"
+#line 1365 "src/gen/parser.cpp"
     break;
 
   case 10:
-#line 51 "src/lang/parser.y"
+#line 58 "src/lang/parser.y"
                                         { (yyval.expression) = (yyvsp[-1].expression); }
-#line 1366 "src/gen/parser.cpp"
+#line 1371 "src/gen/parser.cpp"
     break;
 
 
-#line 1370 "src/gen/parser.cpp"
+#line 1375 "src/gen/parser.cpp"
 
       default: break;
     }
@@ -1598,4 +1603,4 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 60 "src/lang/parser.y"
+#line 72 "src/lang/parser.y"
