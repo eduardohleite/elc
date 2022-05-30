@@ -50,13 +50,12 @@ extern int yydebug;
   enum yytokentype
   {
     TINTEGER = 258,
-    TFLOAT = 259,
-    TLPAREN = 260,
-    TRPAREN = 261,
-    TPLUS = 262,
-    TMINUS = 263,
-    TMUL = 264,
-    TDIV = 265
+    TLPAREN = 259,
+    TRPAREN = 260,
+    TPLUS = 261,
+    TMINUS = 262,
+    TMUL = 263,
+    TDIV = 264
   };
 #endif
 
@@ -73,7 +72,7 @@ union YYSTYPE
     std::string *string;
     int token;
 
-#line 77 "src/gen/parser.hpp"
+#line 76 "src/gen/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

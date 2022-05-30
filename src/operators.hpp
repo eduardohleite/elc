@@ -1,32 +1,36 @@
+#pragma once
+
 namespace ELang {
 namespace Runtime {
 
-class Operator {
+class Value;
 
+class Operator {
 };
 
 class ArithmeticOperator: public Operator {
+    virtual Value eval(Value lhs, Value rhs) const { }
 };
 
 
 class PlusOperator: public ArithmeticOperator {
 public:
-    long eval(long lhs, long rhs) const { return lhs + rhs; }
+    virtual Value eval(Value lhs, Value rhs) const override;
 };
 
 class MinusOperator: public ArithmeticOperator {
 public:
-    long eval(long lhs, long rhs) const { return lhs - rhs; }
+    virtual Value eval(Value lhs, Value rhs) const override;
 };
 
 class MultiplyOperator: public ArithmeticOperator {
 public:
-    long eval(long lhs, long rhs) const { return lhs * rhs; }
+    virtual Value eval(Value lhs, Value rhs) const override;
 };
 
 class DivideOperator: public ArithmeticOperator {
 public:
-    long eval(long lhs, long rhs) const { return lhs / rhs; }
+    virtual Value eval(Value lhs, Value rhs) const override;
 };
 
 }

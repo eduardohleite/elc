@@ -16,7 +16,7 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
     int token;
 }
 
-%token <string> TINTEGER TFLOAT
+%token <string> TINTEGER
 %token <token> TLPAREN TRPAREN
 %token <token> TPLUS TMINUS TMUL TDIV
 

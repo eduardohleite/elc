@@ -6,8 +6,7 @@ using namespace ELang::Runtime;
 using namespace ELang::Meta;
 using namespace std;
 
-
-long Interpreter::eval_expression(const Expression& expression) const {
+Value Interpreter::eval_expression(const Expression& expression) const {
     // check for expression types
     auto expr_ptr = &expression;
 
@@ -35,9 +34,6 @@ long Interpreter::eval_expression(const Expression& expression) const {
     if (nullptr != int_expr) {
         return int_expr->value;
     }
-
-    auto float_expr = dynamic_cast<const Float*>(expr_ptr);
-    auto i = 0;
 }
 
 
@@ -49,7 +45,7 @@ void Interpreter::run(const Block* program) const {
         auto expression_statement = dynamic_cast<ExpressionStatement*>(statement);
         if (nullptr != expression_statement) {
             auto res = eval_expression(expression_statement->expression);
-            cout << "Evaluated: " << res << endl;
+            cout << "Evaluated: " << std::get<long>(res.value) << endl;
         }
     }
 }

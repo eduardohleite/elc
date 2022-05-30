@@ -13,6 +13,7 @@ debug-build: gen-lang
 		src/gen/parser.cpp \
 		src/gen/tokens.cpp \
 		src/vm.cpp \
+		src/operators.cpp \
 		src/main.cpp
 
 clean:

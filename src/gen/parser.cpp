@@ -124,13 +124,12 @@ extern int yydebug;
   enum yytokentype
   {
     TINTEGER = 258,
-    TFLOAT = 259,
-    TLPAREN = 260,
-    TRPAREN = 261,
-    TPLUS = 262,
-    TMINUS = 263,
-    TMUL = 264,
-    TDIV = 265
+    TLPAREN = 259,
+    TRPAREN = 260,
+    TPLUS = 261,
+    TMINUS = 262,
+    TMUL = 263,
+    TDIV = 264
   };
 #endif
 
@@ -147,7 +146,7 @@ union YYSTYPE
     std::string *string;
     int token;
 
-#line 151 "src/gen/parser.cpp"
+#line 150 "src/gen/parser.cpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -469,7 +468,7 @@ union yyalloc
 #define YYLAST   14
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  11
+#define YYNTOKENS  10
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  7
 /* YYNRULES -- Number of rules.  */
@@ -478,7 +477,7 @@ union yyalloc
 #define YYNSTATES  18
 
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   265
+#define YYMAXUTOK   264
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -516,7 +515,7 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9,    10
+       5,     6,     7,     8,     9
 };
 
 #if YYDEBUG
@@ -533,9 +532,9 @@ static const yytype_int8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "TINTEGER", "TFLOAT", "TLPAREN",
-  "TRPAREN", "TPLUS", "TMINUS", "TMUL", "TDIV", "$accept", "program",
-  "statements", "statement", "numeric", "expression", "arithmetic", YY_NULLPTR
+  "$end", "error", "$undefined", "TINTEGER", "TLPAREN", "TRPAREN",
+  "TPLUS", "TMINUS", "TMUL", "TDIV", "$accept", "program", "statements",
+  "statement", "numeric", "expression", "arithmetic", YY_NULLPTR
 };
 #endif
 
@@ -544,12 +543,11 @@ static const char *const yytname[] =
    (internal) symbol number NUM (which must be that of a token).  */
 static const yytype_int16 yytoknum[] =
 {
-       0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265
+       0,   256,   257,   258,   259,   260,   261,   262,   263,   264
 };
 # endif
 
-#define YYPACT_NINF (-6)
+#define YYPACT_NINF (-5)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -563,8 +561,8 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       7,    -6,     7,    11,     7,    -6,    -6,    -1,    -5,    -6,
-      -6,    -6,    -6,    -6,    -6,     7,    -6,    -1
+       7,    -5,     7,    12,     7,    -5,    -5,     0,    -4,    -5,
+      -5,    -5,    -5,    -5,    -5,     7,    -5,     0
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -579,7 +577,7 @@ static const yytype_int8 yydefact[] =
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -6,    -6,    -6,    10,    -6,    -2,    -6
+      -5,    -5,    -5,    10,    -5,    -2,    -5
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -594,28 +592,28 @@ static const yytype_int8 yydefgoto[] =
 static const yytype_int8 yytable[] =
 {
        8,    16,    11,    12,    13,    14,    11,    12,    13,    14,
-       1,     9,     2,    17,    10
+       1,     2,     9,    17,    10
 };
 
 static const yytype_int8 yycheck[] =
 {
-       2,     6,     7,     8,     9,    10,     7,     8,     9,    10,
-       3,     0,     5,    15,     4
+       2,     5,     6,     7,     8,     9,     6,     7,     8,     9,
+       3,     4,     0,    15,     4
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     5,    12,    13,    14,    15,    16,    16,     0,
-      14,     7,     8,     9,    10,    17,     6,    16
+       0,     3,     4,    11,    12,    13,    14,    15,    15,     0,
+      13,     6,     7,     8,     9,    16,     5,    15
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    11,    12,    13,    13,    14,    15,    16,    16,    16,
-      17,    17,    17,    17
+       0,    10,    11,    12,    12,    13,    14,    15,    15,    15,
+      16,    16,    16,    16
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -1320,47 +1318,47 @@ yyreduce:
   case 2:
 #line 35 "src/lang/parser.y"
                         { main_block = (yyvsp[0].block); }
-#line 1324 "src/gen/parser.cpp"
+#line 1322 "src/gen/parser.cpp"
     break;
 
   case 3:
 #line 38 "src/lang/parser.y"
                        { (yyval.block) = new ELang::Meta::Block(); (yyval.block)->statements.push_back((yyvsp[0].statement)); }
-#line 1330 "src/gen/parser.cpp"
+#line 1328 "src/gen/parser.cpp"
     break;
 
   case 4:
 #line 39 "src/lang/parser.y"
                                   { (yyvsp[-1].block)->statements.push_back((yyvsp[0].statement)); }
-#line 1336 "src/gen/parser.cpp"
+#line 1334 "src/gen/parser.cpp"
     break;
 
   case 5:
 #line 42 "src/lang/parser.y"
                         { (yyval.statement) = new ELang::Meta::ExpressionStatement(*(yyvsp[0].expression)); }
-#line 1342 "src/gen/parser.cpp"
+#line 1340 "src/gen/parser.cpp"
     break;
 
   case 6:
 #line 45 "src/lang/parser.y"
                       { (yyval.expression) = new ELang::Meta::Integer(atol((yyvsp[0].string)->c_str())); delete (yyvsp[0].string); }
-#line 1348 "src/gen/parser.cpp"
+#line 1346 "src/gen/parser.cpp"
     break;
 
   case 8:
 #line 49 "src/lang/parser.y"
                                               { (yyval.expression) = new ELang::Meta::ArithmeticExpression(*(yyvsp[-2].expression), (yyvsp[-1].token), *(yyvsp[0].expression)); }
-#line 1354 "src/gen/parser.cpp"
+#line 1352 "src/gen/parser.cpp"
     break;
 
   case 9:
 #line 50 "src/lang/parser.y"
                                         { (yyval.expression) = (yyvsp[-1].expression); }
-#line 1360 "src/gen/parser.cpp"
+#line 1358 "src/gen/parser.cpp"
     break;
 
 
-#line 1364 "src/gen/parser.cpp"
+#line 1362 "src/gen/parser.cpp"
 
       default: break;
     }
