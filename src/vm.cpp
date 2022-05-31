@@ -200,7 +200,7 @@ void Interpreter::register_builtins() {
 void Context::register_method(const Method method) {
     auto it = methods.find(method.identifier);
     if (it == methods.end()) {
-        methods[method.identifier] = vector<const Method>();
+        methods[method.identifier] = vector<Method>();
     }
 
     methods[method.identifier].push_back(method);

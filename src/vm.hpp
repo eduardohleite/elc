@@ -39,19 +39,19 @@ public:
 class Method {
 public:
     string identifier;
-    vector<const Argument> arguments;
+    vector<Argument> arguments;
     function<Value(vector<Value>&)> callable;
 
-    Method(string identifier, vector<const Argument> arguments, function<Value(vector<Value>&)> callable):
+    Method(string identifier, vector<Argument> arguments, function<Value(vector<Value>&)> callable):
         identifier(identifier), arguments(arguments), callable(callable) { }
 };
 
 class Context {
 public:
-    map<string, vector<const Method>> methods;
+    map<string, vector<Method>> methods;
 
     Context(): methods() { }
-    void register_method(const Method method);
+    void register_method(Method method);
 };
 
 class Interpreter {
