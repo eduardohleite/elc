@@ -29,6 +29,12 @@ public:
     Float(double value): value(value) { }
 };
 
+class Boolean: public Expression {
+public:
+    bool value;
+    Boolean(bool value): value(value) { }
+};
+
 class ArithmeticExpression: public Expression {
 public:
     int op;

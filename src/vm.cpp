@@ -22,6 +22,12 @@ Value Interpreter::eval_expression(const Expression& expression) const {
         return float_expr->value;
     }
 
+    // boolean constant
+    const auto bool_expr = dynamic_cast<const Boolean*>(expr_ptr);
+    if (nullptr != bool_expr) {
+        return bool_expr->value;
+    }
+
     // arithmetic expression
     const auto arithmetic_expr = dynamic_cast<const ArithmeticExpression*>(expr_ptr);
     if (nullptr != arithmetic_expr) {
@@ -105,6 +111,9 @@ void Interpreter::print_value(const Value& v) const {
             break;
         case Type::Float:
             cout << std::get<double>(v.value) << " (type: Float)";
+            break;
+        case Type::Boolean:
+            cout << (std::get<bool>(v.value) ? "true" : "false") << " (type: Boolean)";
             break;
     }
 

@@ -19,11 +19,12 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 }
 
 %token <string> TIDENTIFIER TINTEGER TFLOAT
+%token <string> TTRUE TFALSE
 %token <token> TLPAREN TRPAREN TCOMMA
 %token <token> TPLUS TMINUS TMUL TDIV
 
 %type <identifier> identifier
-%type <expression> number expression
+%type <expression> number boolean expression
 %type <expressions> arguments
 %type <block> program statements
 %type <statement> statement
@@ -53,8 +54,13 @@ number     : TINTEGER { $$ = new ELang::Meta::Integer(atol($1->c_str())); delete
            | TFLOAT { $$ = new ELang::Meta::Float(atof($1->c_str())); delete $1; }
            ;
 
+boolean    : TTRUE { $$ = new ELang::Meta::Boolean(true); delete $1; }
+           | TFALSE { $$ = new ELang::Meta::Boolean(false); delete $1; }
+           ;
+
 expression : identifier TLPAREN arguments TRPAREN { $$ = new ELang::Meta::FunctionCall(*$1, *$3); delete $3; }
            | number
+           | boolean
            | expression arithmetic expression { $$ = new ELang::Meta::ArithmeticExpression(*$1, $2, *$3); }
            | TLPAREN expression TRPAREN { $$ = $2; }
            ;
