@@ -11,11 +11,12 @@ using namespace std;
 namespace ELang {
 namespace Runtime {
 
-typedef variant<monostate, long, double> Variant;
+typedef variant<monostate, long, double, bool> Variant;
 
 enum class Type {
     Integer,
-    Float
+    Float,
+    Boolean
 };
 
 
@@ -23,6 +24,7 @@ class Value {
 public:
     Value(long value): value(value), type(Type::Integer) { }
     Value(double value): value(value), type(Type::Float) { }
+    Value(bool value): value(value), type(Type::Boolean) { }
 
     Type type;
     Variant value;

@@ -12,6 +12,13 @@ extern "C" int yywrap() { }
 
 [ \t\n] ;
 
+"true"  SAVE_TOKEN; return TTRUE;
+"false" SAVE_TOKEN; return TFALSE;
+
+"and" return TOKEN(TAND);
+"or"  return TOKEN(TOR);
+"not" return TOKEN(TNOT);
+
 [a-zA-Z_][a-zA-Z0-9_]* SAVE_TOKEN; return TIDENTIFIER;
 
 [0-9]+\.[0-9]* SAVE_TOKEN; return TFLOAT;
@@ -20,6 +27,13 @@ extern "C" int yywrap() { }
 "(" return TOKEN(TLPAREN);
 ")" return TOKEN(TRPAREN);
 "," return TOKEN(TCOMMA);
+
+"==" return TOKEN(TEQ);
+"!=" return TOKEN(TNE);
+">=" return TOKEN(TGTE);
+">"  return TOKEN(TGT);
+"<=" return TOKEN(TLTE);
+"<"  return TOKEN(TLT);
 
 "+" return TOKEN(TPLUS);
 "-" return TOKEN(TMINUS);
