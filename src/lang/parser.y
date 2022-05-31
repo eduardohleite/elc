@@ -21,9 +21,6 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 %token <string> TIDENTIFIER TINTEGER TFLOAT
 %token <string> TTRUE TFALSE
 %token <token> TLPAREN TRPAREN TCOMMA
-%token <token> TPLUS TMINUS TMUL TDIV
-%token <token> TAND TOR TNOT
-%token <token> TEQ TNE TGTE TGT TLTE TLT
 
 %type <identifier> identifier
 %type <expression> number boolean expression
@@ -31,6 +28,8 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 %type <block> program statements
 %type <statement> statement
 %type <token> arithmetic binary comparison
+
+%nonassoc TEQ TNE TGTE TGT TLTE TLT
 
 %left TAND TOR
 %left TNOT
