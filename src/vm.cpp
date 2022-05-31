@@ -31,22 +31,29 @@ Value Interpreter::eval_expression(const Expression& expression) const {
     // arithmetic expression
     const auto arithmetic_expr = dynamic_cast<const ArithmeticExpression*>(expr_ptr);
     if (nullptr != arithmetic_expr) {
-        const auto lhs_value = eval_expression(arithmetic_expr->lhs);
-        const auto rhs_value = eval_expression(arithmetic_expr->rhs);
+        auto identifier = Identifier();
+        auto args = vector<Expression*>({&arithmetic_expr->lhs, &arithmetic_expr->rhs});
 
         switch (arithmetic_expr->op) {
             case TPLUS:
-                return builtin_add({lhs_value, rhs_value});
+                identifier.name = "__add__";
+                break;
             case TMINUS:
-                return builtin_sub({lhs_value, rhs_value});
+                identifier.name = "__sub__";
+                break;
             case TMUL:
-                return builtin_mul({lhs_value, rhs_value});
+                identifier.name = "__mul__";
+                break;
             case TDIV:
-                return builtin_div({lhs_value, rhs_value});
+                identifier.name = "__div__";
+                break;
             default:
                 cerr << "Error: Invalid operator" << endl;
                 throw -1; 
         }
+
+        auto function_call = FunctionCall(identifier, args);
+        return call_function(&function_call);
     }
 
     // function call

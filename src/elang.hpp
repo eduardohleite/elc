@@ -61,6 +61,7 @@ class Identifier: public Expression {
 public:
     std::string name;
 
+    Identifier(): name() { }
     Identifier(const std::string& name): name(name) { }
 };
 
