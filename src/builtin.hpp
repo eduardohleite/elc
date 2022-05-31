@@ -15,6 +15,8 @@ Value builtin_div(std::vector<Value> params);
 
 // binary operators
 Value builtin_not(std::vector<Value> params);
+Value builtin_and(std::vector<Value> params);
+Value builtin_or(std::vector<Value> params);
 
 } // namespace Runtime
 } // namespace ELang

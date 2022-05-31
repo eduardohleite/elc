@@ -17,7 +17,6 @@ extern "C" int yywrap() { }
 
 "and" return TOKEN(TAND);
 "or"  return TOKEN(TOR);
-"xor" return TOKEN(TXOR);
 "not" return TOKEN(TNOT);
 
 [a-zA-Z_][a-zA-Z0-9_]* SAVE_TOKEN; return TIDENTIFIER;
@@ -28,6 +27,13 @@ extern "C" int yywrap() { }
 "(" return TOKEN(TLPAREN);
 ")" return TOKEN(TRPAREN);
 "," return TOKEN(TCOMMA);
+
+"==" return TOKEN(TEQ);
+"!=" return TOKEN(TNE);
+">=" return TOKEN(TGTE);
+">"  return TOKEN(TGT);
+"<=" return TOKEN(TLTE);
+"<"  return TOKEN(TLT);
 
 "+" return TOKEN(TPLUS);
 "-" return TOKEN(TMINUS);

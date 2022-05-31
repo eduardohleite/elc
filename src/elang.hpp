@@ -65,6 +65,16 @@ public:
         lhs(lhs), op(op), rhs(rhs) { }
 };
 
+class ComparisonExpression: public Expression {
+public:
+    int op;
+    Expression& lhs;
+    Expression& rhs;
+
+    ComparisonExpression(Expression& lhs, int op, Expression& rhs):
+        lhs(lhs), op(op), rhs(rhs) { }
+};
+
 class ExpressionStatement: public Statement {
 public:
     Expression& expression;

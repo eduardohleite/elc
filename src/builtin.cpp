@@ -117,3 +117,35 @@ Value ELang::Runtime::builtin_not(std::vector<Value> params) {
         // TODO: error - invalid operand types
     }
 }
+
+Value ELang::Runtime::builtin_and(std::vector<Value> params) {
+    if (params.size() != 2) {
+        // TODO: invalid operand count
+    }
+
+    auto lhs = params.at(0);
+    auto rhs = params.at(1);
+
+    if (lhs.type == Type::Boolean && rhs.type == Type::Boolean) {
+        return Value(std::get<bool>(lhs.value) && std::get<bool>(rhs.value));
+    }
+    else {
+        // TODO: error - invalid operand types
+    }
+}
+
+Value ELang::Runtime::builtin_or(std::vector<Value> params) {
+    if (params.size() != 2) {
+        // TODO: invalid operand count
+    }
+
+    auto lhs = params.at(0);
+    auto rhs = params.at(1);
+
+    if (lhs.type == Type::Boolean && rhs.type == Type::Boolean) {
+        return Value(std::get<bool>(lhs.value) || std::get<bool>(rhs.value));
+    }
+    else {
+        // TODO: error - invalid operand types
+    }
+}

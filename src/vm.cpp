@@ -39,6 +39,26 @@ Value Interpreter::eval_expression(const Expression& expression) const {
     }
 
     // binary expression
+    const auto binary_expr = dynamic_cast<const BinaryExpression*>(expr_ptr);
+    if (nullptr != binary_expr) {
+        auto identifier = Identifier();
+        auto args = vector<Expression*>({&binary_expr->lhs, &binary_expr->rhs});
+
+        switch (binary_expr->op) {
+            case TAND:
+                identifier.name = "__and__";
+                break;
+            case TOR:
+                identifier.name = "__or__";
+                break;
+            default:
+                cerr << "Error: Invalid operator" << endl;
+                throw -1; 
+        }
+
+        auto function_call = FunctionCall(identifier, args);
+        return call_function(&function_call);
+    }
 
     // arithmetic expression
     const auto arithmetic_expr = dynamic_cast<const ArithmeticExpression*>(expr_ptr);
@@ -67,6 +87,8 @@ Value Interpreter::eval_expression(const Expression& expression) const {
         auto function_call = FunctionCall(identifier, args);
         return call_function(&function_call);
     }
+
+    // comparison expression
 
     // function call
     const auto function_call_expr = dynamic_cast<const FunctionCall*>(expr_ptr);
@@ -228,6 +250,16 @@ void Interpreter::register_builtins() {
         Method("__not__",
               { Argument("expr", Type::Boolean) },
               builtin_not)
+    );
+    execution_context.register_method(
+        Method("__and__",
+              { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) },
+              builtin_and)
+    );
+    execution_context.register_method(
+        Method("__or__",
+              { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) },
+              builtin_or)
     );
 }
 

@@ -22,14 +22,18 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 %token <string> TTRUE TFALSE
 %token <token> TLPAREN TRPAREN TCOMMA
 %token <token> TPLUS TMINUS TMUL TDIV
-%token <token> TAND TOR TXOR TNOT
+%token <token> TAND TOR TNOT
+%token <token> TEQ TNE TGTE TGT TLTE TLT
 
 %type <identifier> identifier
 %type <expression> number boolean expression
 %type <expressions> arguments
 %type <block> program statements
 %type <statement> statement
-%type <token> arithmetic binary
+%type <token> arithmetic binary comparison
+
+%left TAND TOR
+%left TNOT
 
 %left TPLUS TMINUS
 %left TMUL TDIV
@@ -63,6 +67,7 @@ expression : identifier TLPAREN arguments TRPAREN { $$ = new ELang::Meta::Functi
            | number
            | boolean
            | expression arithmetic expression { $$ = new ELang::Meta::ArithmeticExpression(*$1, $2, *$3); }
+           | expression comparison expression { $$ = new ELang::Meta::ComparisonExpression(*$1, $2, *$3); }
            | TNOT expression { $$ = new ELang::Meta::NegatedBinaryExpression(*$2); }
            | expression binary expression { $$ = new ELang::Meta::BinaryExpression(*$1, $2, *$3); }
            | TLPAREN expression TRPAREN { $$ = $2; }
@@ -81,7 +86,14 @@ arithmetic : TPLUS
 
 binary     : TAND
            | TOR
-           | TXOR
+           ;
+
+comparison : TEQ
+           | TNE
+           | TGTE
+           | TGT
+           | TLTE
+           | TLT
            ;
 
 %%
