@@ -102,3 +102,18 @@ Value ELang::Runtime::builtin_div(std::vector<Value> params) {
         // TODO: error - invalid operand types
     }
 }
+
+Value ELang::Runtime::builtin_not(std::vector<Value> params) {
+    if (params.size() != 1) {
+        // TODO: invalid operand count
+    }
+
+    auto expr = params.at(0);
+
+    if (expr.type == Type::Boolean) {
+        return Value(!std::get<bool>(expr.value));
+    }
+    else {
+        // TODO: error - invalid operand types
+    }
+}

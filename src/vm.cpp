@@ -28,6 +28,18 @@ Value Interpreter::eval_expression(const Expression& expression) const {
         return bool_expr->value;
     }
 
+    // negated binary expression
+    const auto negated_binary_expr = dynamic_cast<const NegatedBinaryExpression*>(expr_ptr);
+    if (nullptr != negated_binary_expr) {
+        auto identifier = Identifier("__not__");
+        auto args = vector<Expression*>({&negated_binary_expr->expr});
+
+        auto function_call = FunctionCall(identifier, args);
+        return call_function(&function_call);
+    }
+
+    // binary expression
+
     // arithmetic expression
     const auto arithmetic_expr = dynamic_cast<const ArithmeticExpression*>(expr_ptr);
     if (nullptr != arithmetic_expr) {
@@ -210,6 +222,12 @@ void Interpreter::register_builtins() {
         Method("__div__",
               { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
               builtin_div)
+    );
+
+    execution_context.register_method(
+        Method("__not__",
+              { Argument("expr", Type::Boolean) },
+              builtin_not)
     );
 }
 

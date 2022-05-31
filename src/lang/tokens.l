@@ -15,6 +15,11 @@ extern "C" int yywrap() { }
 "true"  SAVE_TOKEN; return TTRUE;
 "false" SAVE_TOKEN; return TFALSE;
 
+"and" return TOKEN(TAND);
+"or"  return TOKEN(TOR);
+"xor" return TOKEN(TXOR);
+"not" return TOKEN(TNOT);
+
 [a-zA-Z_][a-zA-Z0-9_]* SAVE_TOKEN; return TIDENTIFIER;
 
 [0-9]+\.[0-9]* SAVE_TOKEN; return TFLOAT;
