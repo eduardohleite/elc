@@ -1,5 +1,5 @@
 #include "vm.hpp"
-#include "operators.hpp"
+#include "builtin.hpp"
 #include "gen/parser.hpp"
 
 using namespace ELang::Runtime;
@@ -10,6 +10,19 @@ Value Interpreter::eval_expression(const Expression& expression) const {
     // check for expression types
     const auto expr_ptr = &expression;
 
+    // int constant
+    const auto int_expr = dynamic_cast<const Integer*>(expr_ptr);
+    if (nullptr != int_expr) {
+        return int_expr->value;
+    }
+
+    // float constant
+    const auto float_expr = dynamic_cast<const Float*>(expr_ptr);
+    if (nullptr != float_expr) {
+        return float_expr->value;
+    }
+
+    // arithmetic expression
     const auto arithmetic_expr = dynamic_cast<const ArithmeticExpression*>(expr_ptr);
     if (nullptr != arithmetic_expr) {
         const auto lhs_value = eval_expression(arithmetic_expr->lhs);
@@ -17,28 +30,57 @@ Value Interpreter::eval_expression(const Expression& expression) const {
 
         switch (arithmetic_expr->op) {
             case TPLUS:
-                return PlusOperator().eval(lhs_value, rhs_value);
+                return builtin_add({lhs_value, rhs_value});
             case TMINUS:
-                return MinusOperator().eval(lhs_value, rhs_value);
+                return builtin_sub({lhs_value, rhs_value});
             case TMUL:
-                return MultiplyOperator().eval(lhs_value, rhs_value);
+                return builtin_mul({lhs_value, rhs_value});
             case TDIV:
-                return DivideOperator().eval(lhs_value, rhs_value);
+                return builtin_div({lhs_value, rhs_value});
             default:
-                cout << "Error: Invalid operator" << endl; // TODO error reporting
+                cerr << "Error: Invalid operator" << endl;
                 throw -1; 
         }
     }
 
-    const auto int_expr = dynamic_cast<const Integer*>(expr_ptr);
-    if (nullptr != int_expr) {
-        return int_expr->value;
+    // function call
+    const auto function_call_expr = dynamic_cast<const FunctionCall*>(expr_ptr);
+    if (nullptr != function_call_expr) {
+        return call_function(function_call_expr);
+    }
+}
+
+Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression) const {
+    auto fun = execution_context.methods.find(expression->id.name);
+    if (fun == execution_context.methods.end()) {
+        cerr << "Error: Unknown function `" << expression->id.name << "`" << endl;
+        throw -1;
     }
 
-    const auto float_expr = dynamic_cast<const Float*>(expr_ptr);
-    if (nullptr != float_expr) {
-        return float_expr->value;
+    auto methods = fun->second;
+
+    // parse expression arguments into values
+    auto expression_values = vector<Value>();
+    for (auto it = expression->arguments.begin(); it != expression->arguments.end(); it++) {
+        expression_values.push_back(eval_expression(**it));
     }
+
+    for (auto it = methods.begin(); it != methods.end(); it++) {
+        if (it->arguments.size() == expression->arguments.size()) {
+            auto match = true;
+
+            for (auto i = 0; i < it->arguments.size(); i++) {
+                match &= (it->arguments[i].type == expression_values[i].type);
+            }
+
+            if (match) {
+                return it->callable(expression_values);
+            }
+        }
+    }
+
+    cerr << "Error: Method not found" << endl;
+    throw -1;
 }
 
 void Interpreter::run(const Block* program) const {
@@ -67,4 +109,99 @@ void Interpreter::print_value(const Value& v) const {
     }
 
     cout << endl;
+}
+
+void Interpreter::register_builtins() {
+    execution_context.register_method(
+        Method("__add__",
+              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
+              builtin_add)
+    );
+    execution_context.register_method(
+        Method("__add__",
+              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
+              builtin_add)
+    );
+    execution_context.register_method(
+        Method("__add__",
+              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
+              builtin_add)
+    );
+    execution_context.register_method(
+        Method("__add__",
+              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
+              builtin_add)
+    );
+
+    execution_context.register_method(
+        Method("__sub__",
+              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
+              builtin_sub)
+    );
+    execution_context.register_method(
+        Method("__sub__",
+              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
+              builtin_sub)
+    );
+    execution_context.register_method(
+        Method("__sub__",
+              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
+              builtin_sub)
+    );
+    execution_context.register_method(
+        Method("__sub__",
+              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
+              builtin_sub)
+    );
+
+    execution_context.register_method(
+        Method("__mul__",
+              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
+              builtin_mul)
+    );
+    execution_context.register_method(
+        Method("__mul__",
+              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
+              builtin_mul)
+    );
+    execution_context.register_method(
+        Method("__mul__",
+              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
+              builtin_mul)
+    );
+    execution_context.register_method(
+        Method("__mul__",
+              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
+              builtin_mul)
+    );
+
+    execution_context.register_method(
+        Method("__div__",
+              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
+              builtin_div)
+    );
+    execution_context.register_method(
+        Method("__div__",
+              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
+              builtin_div)
+    );
+    execution_context.register_method(
+        Method("__div__",
+              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
+              builtin_div)
+    );
+    execution_context.register_method(
+        Method("__div__",
+              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
+              builtin_div)
+    );
+}
+
+void Context::register_method(const Method method) {
+    auto it = methods.find(method.identifier);
+    if (it == methods.end()) {
+        methods[method.identifier] = vector<const Method>();
+    }
+
+    methods[method.identifier].push_back(method);
 }

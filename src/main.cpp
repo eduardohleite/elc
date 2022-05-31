@@ -15,6 +15,8 @@ int main(int argc, char **argv) {
     yyparse();
 
     Interpreter runtime;
+    runtime.register_builtins();
+
     runtime.run(main_block);
 
     return 0;

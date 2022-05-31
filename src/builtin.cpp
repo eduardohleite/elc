@@ -1,9 +1,16 @@
+#include "builtin.hpp"
 #include "vm.hpp"
-#include "operators.hpp"
 
 using namespace ELang::Runtime;
 
-Value PlusOperator::eval(Value lhs, Value rhs) const {
+Value ELang::Runtime::builtin_add(std::vector<Value> params) {
+    if (params.size() != 2) {
+        // TODO: invalid operand count
+    }
+
+    auto lhs = params.at(0);
+    auto rhs = params.at(1);
+
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) + std::get<long>(rhs.value));
     }
@@ -21,7 +28,14 @@ Value PlusOperator::eval(Value lhs, Value rhs) const {
     }
 }
 
-Value MinusOperator::eval(Value lhs, Value rhs) const {
+Value ELang::Runtime::builtin_sub(std::vector<Value> params) {
+    if (params.size() != 2) {
+        // TODO: invalid operand count
+    }
+
+    auto lhs = params.at(0);
+    auto rhs = params.at(1);
+
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) - std::get<long>(rhs.value));
     }
@@ -39,7 +53,14 @@ Value MinusOperator::eval(Value lhs, Value rhs) const {
     }
 }
 
-Value MultiplyOperator::eval(Value lhs, Value rhs) const {
+Value ELang::Runtime::builtin_mul(std::vector<Value> params) {
+    if (params.size() != 2) {
+        // TODO: invalid operand count
+    }
+
+    auto lhs = params.at(0);
+    auto rhs = params.at(1);
+
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) * std::get<long>(rhs.value));
     }
@@ -57,7 +78,14 @@ Value MultiplyOperator::eval(Value lhs, Value rhs) const {
     }
 }
 
-Value DivideOperator::eval(Value lhs, Value rhs) const {
+Value ELang::Runtime::builtin_div(std::vector<Value> params) {
+    if (params.size() != 2) {
+        // TODO: invalid operand count
+    }
+
+    auto lhs = params.at(0);
+    auto rhs = params.at(1);
+
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) / std::get<long>(rhs.value));
     }

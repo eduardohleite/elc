@@ -13,7 +13,7 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
     ELang::Meta::Expression* expression;
     ELang::Meta::Statement* statement;
     ELang::Meta::Identifier* identifier;
-    std::vector<ELang::Meta::Expression*> *expressions;
+    std::vector<const ELang::Meta::Expression*> *expressions;
     std::string* string;
     int token;
 }
@@ -53,13 +53,14 @@ number     : TINTEGER { $$ = new ELang::Meta::Integer(atol($1->c_str())); delete
            | TFLOAT { $$ = new ELang::Meta::Float(atof($1->c_str())); delete $1; }
            ;
 
-expression : number
+expression : identifier TLPAREN arguments TRPAREN { $$ = new ELang::Meta::FunctionCall(*$1, *$3); delete $3; }
+           | number
            | expression arithmetic expression { $$ = new ELang::Meta::ArithmeticExpression(*$1, $2, *$3); }
            | TLPAREN expression TRPAREN { $$ = $2; }
            ;
 
-arguments  : { $$ = new ExpressionList(); }
-           | expression { $$ = new ExpressionList(); $$->push_back($1); }
+arguments  : { $$ = new std::vector<const ELang::Meta::Expression*>(); }
+           | expression { $$ = new std::vector<const ELang::Meta::Expression*>(); $$->push_back($1); }
            | arguments TCOMMA expression { $1->push_back($3); }
            ;
 

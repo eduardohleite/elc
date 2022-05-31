@@ -61,9 +61,9 @@ public:
 class FunctionCall: public Expression {
 public:
     const Identifier& id;
-    std::vector<Expression*> arguments;
+    std::vector<const Expression*> arguments;
 
-    FunctionCall(const Identifier& id, std::vector<Expression*>& arguments):
+    FunctionCall(const Identifier& id, std::vector<const Expression*>& arguments):
         id(id), arguments(arguments) { }
     FunctionCall(const Identifier& id): id(id) { }
 };

@@ -12,10 +12,10 @@ debug-build: gen-lang
 		-g -o out/elc \
 		src/gen/parser.cpp \
 		src/gen/tokens.cpp \
+		src/builtin.cpp \
 		src/vm.cpp \
-		src/operators.cpp \
 		src/main.cpp
 
 clean:
-	rm -f out/*
-	rm -f src/gen/*
+	rm -rf out/*
+	rm -rf src/gen/*
