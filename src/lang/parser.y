@@ -20,7 +20,7 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 
 %token <string> TIDENTIFIER TINTEGER TFLOAT
 %token <string> TTRUE TFALSE
-%token <token> TLPAREN TRPAREN TCOMMA
+%token <token> TLPAREN TRPAREN TCOMMA TASSIGN
 
 %type <identifier> identifier
 %type <expression> number boolean expression
@@ -49,6 +49,7 @@ statements : statement { $$ = new ELang::Meta::Block(); $$->statements.push_back
            ;
 
 statement  : expression { $$ = new ELang::Meta::ExpressionStatement(*$1); }
+           | identifier TASSIGN expression { $$ = new ELang::Meta::Assignment(*$1, *$3); }
            ;
 
 identifier : TIDENTIFIER { $$ = new ELang::Meta::Identifier(*$1); delete $1; }
@@ -65,6 +66,7 @@ boolean    : TTRUE { $$ = new ELang::Meta::Boolean(true); delete $1; }
 expression : identifier TLPAREN arguments TRPAREN { $$ = new ELang::Meta::FunctionCall(*$1, *$3); delete $3; }
            | number
            | boolean
+           | identifier
            | expression arithmetic expression { $$ = new ELang::Meta::ArithmeticExpression(*$1, $2, *$3); }
            | expression comparison expression { $$ = new ELang::Meta::ComparisonExpression(*$1, $2, *$3); }
            | TNOT expression { $$ = new ELang::Meta::NegatedBinaryExpression(*$2); }

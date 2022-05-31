@@ -25,6 +25,7 @@ public:
     Value(long value): value(value), type(Type::Integer) { }
     Value(double value): value(value), type(Type::Float) { }
     Value(bool value): value(value), type(Type::Boolean) { }
+    Value() { }
 
     Type type;
     Variant value;
@@ -51,9 +52,12 @@ public:
 class Context {
 public:
     map<string, vector<Method>> methods;
+    map<string, Value> variables;
 
-    Context(): methods() { }
-    void register_method(Method method);
+    Context(): methods(), variables() { }
+    void register_method(const Method method);
+    void assign_variable(const string name, Value value);
+    Value read_variable(const string name);
 };
 
 class Interpreter {
@@ -63,12 +67,12 @@ public:
 
     Context execution_context;
 
-    void run(const ELang::Meta::Block* program) const;
+    void run(const ELang::Meta::Block* program);
     void register_builtins();
 
 protected:
-    Value eval_expression(const ELang::Meta::Expression& expression) const;
-    Value call_function(const ELang::Meta::FunctionCall* expression) const;
+    Value eval_expression(const ELang::Meta::Expression& expression);
+    Value call_function(const ELang::Meta::FunctionCall* expression);
     void print_value(const Value& value) const;
 };
 
