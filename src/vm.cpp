@@ -335,6 +335,9 @@ void Interpreter::register_builtins() {
 
     execution_context.register_method(Method("push!", { Argument("vec", Type::Vector), Argument("value", Type::Any) }, builtin_push_bang));
     execution_context.register_method(Method("pop!", { Argument("vec", Type::Vector) }, builtin_pop_bang));
+
+    execution_context.register_method(Method("__at__", { Argument("vec", Type::Vector), Argument("index", Type::Integer) }, builtin_at));
+    execution_context.register_method(Method("__in__", { Argument("vec", Type::Vector), Argument("value", Type::Any) }, builtin_in));
 }
 
 void Context::register_method(const Method method) {

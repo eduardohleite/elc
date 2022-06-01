@@ -2,6 +2,7 @@
 #include "vm.hpp"
 
 #include <memory>
+#include <algorithm>
 
 using namespace ELang::Runtime;
 
@@ -473,3 +474,43 @@ Value ELang::Runtime::builtin_pop_bang(std::vector<Value> params) {
         // TODO: error - invalid parameter types
     }
 }
+
+Value ELang::Runtime::builtin_at(std::vector<Value> params) {
+    if (params.size() != 2) {
+        // TODO: invalid parameter count
+    }
+
+    auto vec = params.at(0);
+    auto index = params.at(1);
+
+    if (vec.type == Type::Vector && index.type == Type::Integer) {
+        auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
+        auto indexval = std::get<long>(index.value);
+
+        //TODO: out of bounds
+        return Value(vecval->at(indexval-1)); /* 1-based array */
+    }
+    else {
+        // TODO: error - invalid parameter types
+    }
+}
+
+Value ELang::Runtime::builtin_in(std::vector<Value> params) {
+    if (params.size() != 2) {
+        // TODO: invalid parameter count
+    }
+
+    const auto vec = params.at(0);
+    const auto val = params.at(1);
+
+    if (vec.type == Type::Vector) {
+        auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
+
+        return Value(std::find_if(vecval->begin(), vecval->end(),
+            [val](const ELang::Runtime::Value v) { return  v.type == val.type && v.value == val.value; }) != vecval->end());
+    }
+    else {
+        // TODO: error - invalid parameter types
+    }
+}
+
