@@ -19,7 +19,7 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 }
 
 %token <string> TIDENTIFIER TINTEGER TFLOAT
-%token <string> TIF TELSE TEND
+%token <string> TIF TELSE TFOR TWHILE TEND
 %token <string> TTRUE TFALSE
 %token <token> TLPAREN TRPAREN TLBRACKET TRBRACKET TCOMMA TASSIGN TCOLON TIN
 
@@ -27,7 +27,7 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 %type <expression> number boolean expression
 %type <expressions> arguments
 %type <block> program statements
-%type <statement> statement if_stmt
+%type <statement> statement if_stmt loop
 %type <token> arithmetic binary comparison
 
 %nonassoc TEQ TNE TGTE TGT TLTE TLT TIN
@@ -52,11 +52,17 @@ statements : statement { $$ = new ELang::Meta::Block(); $$->statements.push_back
 statement  : expression { $$ = new ELang::Meta::ExpressionStatement(*$1); }
            | identifier TASSIGN expression { $$ = new ELang::Meta::Assignment(*$1, *$3); }
            | if_stmt
+           | loop
            ;
 
 if_stmt    : TIF expression statements TEND { $$ = new ELang::Meta::IfStatement(*$2, $3); }
            | TIF expression statements TELSE statements TEND {$$ = new ELang::Meta::IfStatement(*$2, $3, $5); }
            ;
+
+loop       : TFOR identifier TIN expression statements TEND { $$ = new ELang::Meta::ForLoop(*$2, *$4, $5); }
+           | TWHILE expression statements TEND { $$ = new ELang::Meta::WhileLoop(*$2, $3); }
+           ;
+
 
 identifier : TIDENTIFIER { $$ = new ELang::Meta::Identifier(*$1); delete $1; }
            ;
