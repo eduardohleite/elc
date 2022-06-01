@@ -108,5 +108,14 @@ public:
     FunctionCall(const Identifier& id): id(id) { }
 };
 
+class Assignment: public Statement {
+public:
+    const Identifier& id;
+    Expression& expression;
+
+    Assignment(const Identifier& id, Expression& expression):
+        id(id), expression(expression) { }
+};
+
 } // namespace Meta
 } // namespace ELang

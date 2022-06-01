@@ -6,7 +6,7 @@ using namespace ELang::Runtime;
 using namespace ELang::Meta;
 using namespace std;
 
-Value Interpreter::eval_expression(const Expression& expression) const {
+Value Interpreter::eval_expression(const Expression& expression) {
     // check for expression types
     const auto expr_ptr = &expression;
 
@@ -127,9 +127,15 @@ Value Interpreter::eval_expression(const Expression& expression) const {
     if (nullptr != function_call_expr) {
         return call_function(function_call_expr);
     }
+
+    // identifier
+    const auto identifier_expr = dynamic_cast<const Identifier*>(expr_ptr);
+    if (nullptr != identifier_expr) {
+        return execution_context.read_variable(identifier_expr->name);
+    }
 }
 
-Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression) const {
+Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression) {
     auto fun = execution_context.methods.find(expression->id.name);
     if (fun == execution_context.methods.end()) {
         cerr << "Error: Unknown function `" << expression->id.name << "`" << endl;
@@ -162,7 +168,7 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression) co
     throw -1;
 }
 
-void Interpreter::run(const Block* program) const {
+void Interpreter::run(const Block* program) {
     for (auto it = program->statements.begin(); it != program->statements.end(); it++) {
         const auto statement = *it;
 
@@ -171,6 +177,14 @@ void Interpreter::run(const Block* program) const {
         if (nullptr != expression_statement) {
             const auto res = eval_expression(expression_statement->expression);
             print_value(res);
+            continue;
+        }
+
+        const auto assignment = dynamic_cast<Assignment*>(statement);
+        if (nullptr != assignment) {
+            auto value = eval_expression(assignment->expression);
+            execution_context.assign_variable(assignment->id.name, value);
+            continue;
         }
     }
 }
@@ -458,4 +472,18 @@ void Context::register_method(const Method method) {
     }
 
     methods[method.identifier].push_back(method);
+}
+
+void Context::assign_variable(const string name, Value value) {
+    variables[name] = value;
+}
+
+Value Context::read_variable(const string name) {
+    auto it = variables.find(name);
+    if (it == variables.end()) {
+        cerr << "Calling variable `" << name << "` before assignment." << endl;
+        throw -1;
+    }
+
+    return variables[name];
 }

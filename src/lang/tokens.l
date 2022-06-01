@@ -35,6 +35,8 @@ extern "C" int yywrap() { }
 "<=" return TOKEN(TLTE);
 "<"  return TOKEN(TLT);
 
+"=" return TOKEN(TASSIGN);
+
 "+" return TOKEN(TPLUS);
 "-" return TOKEN(TMINUS);
 "*" return TOKEN(TMUL);
