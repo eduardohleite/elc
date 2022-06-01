@@ -131,6 +131,15 @@ public:
     SearchExpression(Expression& collection, Expression& element): collection(collection), element(element) { }
 };
 
+class IndexExpression: public Expression {
+public:
+    Expression& identifier_expression;
+    Expression& expression;
+
+    IndexExpression(Expression& identifier_expression, Expression& expression):
+        identifier_expression(identifier_expression), expression(expression) { }
+};
+
 class Assignment: public Statement {
 public:
     const Identifier& id;

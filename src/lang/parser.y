@@ -73,6 +73,7 @@ expression : identifier TLPAREN arguments TRPAREN { $$ = new ELang::Meta::Functi
            | number
            | boolean
            | identifier
+           | identifier TLBRACKET expression TRBRACKET { $$ = new ELang::Meta::IndexExpression(*$1, *$3); }
            | expression arithmetic expression { $$ = new ELang::Meta::ArithmeticExpression(*$1, $2, *$3); }
            | expression comparison expression { $$ = new ELang::Meta::ComparisonExpression(*$1, $2, *$3); }
            | TNOT expression { $$ = new ELang::Meta::NegatedBinaryExpression(*$2); }

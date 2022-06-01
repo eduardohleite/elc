@@ -149,6 +149,14 @@ Value Interpreter::eval_expression(const Expression& expression) {
         return call_function(&function_call);
     }
 
+    // index
+    const auto index_expr = dynamic_cast<const IndexExpression*>(expr_ptr);
+    if (nullptr != index_expr) {
+        auto args = vector<Expression*>({&index_expr->identifier_expression, &index_expr->expression});
+        auto function_call = FunctionCall(Identifier("__at__"), args);
+        return call_function(&function_call);
+    }
+
     // function call
     const auto function_call_expr = dynamic_cast<const FunctionCall*>(expr_ptr);
     if (nullptr != function_call_expr) {
