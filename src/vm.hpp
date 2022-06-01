@@ -16,10 +16,11 @@ class Value; // forward declaration
 typedef std::variant<std::monostate, long, double, bool, std::shared_ptr<std::vector<Value>>> Variant;
 
 enum class Type {
+    Any,
     Integer,
     Float,
     Boolean,
-    List
+    Vector
 };
 
 
@@ -28,7 +29,7 @@ public:
     Value(long value): value(value), type(Type::Integer) { }
     Value(double value): value(value), type(Type::Float) { }
     Value(bool value): value(value), type(Type::Boolean) { }
-    Value(std::shared_ptr<std::vector<Value>> value): value(value), type(Type::List) { }
+    Value(std::shared_ptr<std::vector<Value>> value): value(value), type(Type::Vector) { }
 
     Value() { }
 

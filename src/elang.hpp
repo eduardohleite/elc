@@ -108,11 +108,11 @@ public:
     FunctionCall(const Identifier& id): id(id) { }
 };
 
-class ListExpression: public Expression {
+class VectorExpression: public Expression {
 public:
     std::vector<Expression*> arguments;
 
-    ListExpression(std::vector<Expression*>& arguments): arguments(arguments) { }
+    VectorExpression(std::vector<Expression*>& arguments): arguments(arguments) { }
 };
 
 class Assignment: public Statement {

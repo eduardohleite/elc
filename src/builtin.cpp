@@ -1,6 +1,8 @@
 #include "builtin.hpp"
 #include "vm.hpp"
 
+#include <memory>
+
 using namespace ELang::Runtime;
 
 Value ELang::Runtime::builtin_add(std::vector<Value> params) {
@@ -315,5 +317,134 @@ Value ELang::Runtime::builtin_lt(std::vector<Value> params) {
     }
     else {
         // TODO: error - invalid operand types
+    }
+}
+
+Value ELang::Runtime::builtin_zeros(std::vector<Value> params) {
+    if (params.size() != 1) {
+        // TODO: invalid parameter count
+    }
+
+    auto n = params.at(0);
+    if (n.type == Type::Integer) {
+        auto vec = std::make_shared<std::vector<Value>>();
+        auto nval = std::get<long>(n.value);
+
+        for (auto i = 0; i < nval; i++) {
+            vec->push_back(Value(0l));
+        }
+
+        return Value(vec);
+    }
+    else {
+        // TODO: error - invalid parameter types
+    }
+}
+
+Value ELang::Runtime::builtin_ones(std::vector<Value> params) {
+    if (params.size() != 1) {
+        // TODO: invalid parameter count
+    }
+
+    auto n = params.at(0);
+    if (n.type == Type::Integer) {
+        auto vec = std::make_shared<std::vector<Value>>();
+        auto nval = std::get<long>(n.value);
+
+        for (auto i = 0; i < nval; i++) {
+            vec->push_back(Value(1l));
+        }
+
+        return Value(vec);
+    }
+    else {
+        // TODO: error - invalid parameter types
+    }
+}
+
+Value ELang::Runtime::builtin_length(std::vector<Value> params) {
+    if (params.size() != 1) {
+        // TODO: invalid parameter count
+    }
+
+    auto vec = params.at(0);
+
+    if (vec.type == Type::Vector) {
+        auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
+        return Value(static_cast<long>(vecval->size()));
+    }
+    else {
+        // TODO: error - invalid parameter types
+    }
+}
+
+Value ELang::Runtime::builtin_range(std::vector<Value> params) {
+    auto has_min = false;
+    Value min, max;
+
+    if (params.size() == 1) {
+        max = params.at(0);
+    }
+    else if (params.size() == 2) {
+        has_min = true;
+
+        min = params.at(0);
+        max = params.at(1);
+    }
+    else {
+        // TODO: invalid parameter count
+    }
+
+    if (max.type == Type::Integer && (! has_min || (has_min && min.type == Type::Integer))) {
+        auto vec = std::make_shared<std::vector<Value>>();
+        auto minval = has_min ? std::get<long>(min.value) - 1 : 0;
+        auto maxval = std::get<long>(max.value);
+
+        for (auto i = minval; i < maxval; i++) {
+            vec->push_back(Value(i+1));
+        }
+
+        return Value(vec);
+    }
+    else {
+        // TODO: error - invalid parameter types
+    }
+}
+
+
+
+Value ELang::Runtime::builtin_push_bang(std::vector<Value> params) {
+    if (params.size() != 2) {
+        // TODO: invalid parameter count
+    }
+
+    auto vec = params.at(0);
+    auto val = params.at(1);
+
+    if (vec.type == Type::Vector) {
+        auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
+        
+        switch(val.type) {
+            case Type::Integer:
+                vecval->push_back(std::get<long>(val.value));
+                break;
+            case Type::Boolean:
+                vecval->push_back(std::get<bool>(val.value));
+                break;
+            case Type::Float:
+                vecval->push_back(std::get<double>(val.value));
+                break;
+            case Type::Vector:
+                vecval->push_back(std::get<std::shared_ptr<std::vector<Value>>>(val.value));
+                break;
+            default:
+                // TODO: error
+                break;
+        }
+
+        return Value(vec);
+    }
+    else {
+        // TODO: error - invalid parameter types
     }
 }

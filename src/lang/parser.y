@@ -78,7 +78,7 @@ expression : identifier TLPAREN arguments TRPAREN { $$ = new ELang::Meta::Functi
            | TNOT expression { $$ = new ELang::Meta::NegatedBinaryExpression(*$2); }
            | expression binary expression { $$ = new ELang::Meta::BinaryExpression(*$1, $2, *$3); }
            | TLPAREN expression TRPAREN { $$ = $2; }
-           | TLBRACKET arguments TRBRACKET { $$ = new ELang::Meta::ListExpression(*$2); delete $2; }
+           | TLBRACKET arguments TRBRACKET { $$ = new ELang::Meta::VectorExpression(*$2); delete $2; }
            ;
 
 arguments  : { $$ = new std::vector<ELang::Meta::Expression*>(); }

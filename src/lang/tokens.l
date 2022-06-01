@@ -23,7 +23,7 @@ extern "C" int yywrap() { }
 "else" return TOKEN(TELSE);
 "end"  return TOKEN(TEND);
 
-[a-zA-Z_][a-zA-Z0-9_]* SAVE_TOKEN; return TIDENTIFIER;
+[a-zA-Z_][a-zA-Z0-9_]*!? SAVE_TOKEN; return TIDENTIFIER;
 
 [0-9]+\.[0-9]* SAVE_TOKEN; return TFLOAT;
 [0-9]+         SAVE_TOKEN; return TINTEGER;
