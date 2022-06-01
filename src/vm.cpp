@@ -141,6 +141,14 @@ Value Interpreter::eval_expression(const Expression& expression) {
         return call_function(&function_call);
     }
 
+    // search
+    const auto search_expr = dynamic_cast<const SearchExpression*>(expr_ptr);
+    if (nullptr != search_expr) {
+        auto args = vector<Expression*>({&search_expr->collection, &search_expr->element});
+        auto function_call = FunctionCall(Identifier("__in__"), args);
+        return call_function(&function_call);
+    }
+
     // function call
     const auto function_call_expr = dynamic_cast<const FunctionCall*>(expr_ptr);
     if (nullptr != function_call_expr) {

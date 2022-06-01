@@ -123,6 +123,14 @@ public:
     RangeExpression(Expression& start, Expression& end): start(start), end(end) { }
 };
 
+class SearchExpression: public Expression {
+public:
+    Expression& collection;
+    Expression& element;
+
+    SearchExpression(Expression& collection, Expression& element): collection(collection), element(element) { }
+};
+
 class Assignment: public Statement {
 public:
     const Identifier& id;
