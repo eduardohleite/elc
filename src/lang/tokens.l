@@ -28,9 +28,11 @@ extern "C" int yywrap() { }
 [0-9]+\.[0-9]* SAVE_TOKEN; return TFLOAT;
 [0-9]+         SAVE_TOKEN; return TINTEGER;
 
-"(" return TOKEN(TLPAREN);
-")" return TOKEN(TRPAREN);
-"," return TOKEN(TCOMMA);
+"("  return TOKEN(TLPAREN);
+")"  return TOKEN(TRPAREN);
+"\[" return TOKEN(TLBRACKET);
+"\]" return TOKEN(TRBRACKET);
+","  return TOKEN(TCOMMA);
 
 "==" return TOKEN(TEQ);
 "!=" return TOKEN(TNE);

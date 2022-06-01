@@ -28,6 +28,17 @@ Value Interpreter::eval_expression(const Expression& expression) {
         return bool_expr->value;
     }
 
+    // list expression
+    const auto list_expr = dynamic_cast<const ListExpression*>(expr_ptr);
+    if (nullptr != list_expr) {
+        auto list = make_shared<vector<Value>>();
+        for (auto it = list_expr->arguments.begin(); it != list_expr->arguments.end(); it++) {
+            list->push_back(eval_expression(**it));
+        }
+
+        return Value(list);
+    }
+
     // negated binary expression
     const auto negated_binary_expr = dynamic_cast<const NegatedBinaryExpression*>(expr_ptr);
     if (nullptr != negated_binary_expr) {
@@ -208,8 +219,6 @@ void Interpreter::run(const Block* program) {
             print_value(res);
             continue;
         }
-
-        
     }
 }
 
@@ -225,6 +234,10 @@ void Interpreter::print_value(const Value& v) const {
             break;
         case Type::Boolean:
             cout << (std::get<bool>(v.value) ? "true" : "false") << " (type: Boolean)";
+            break;
+        case Type::List:
+            auto list = std::get<shared_ptr<vector<Value>>>(v.value);
+            cout << "List with " << list->size() << " elements" << endl;
             break;
     }
 
