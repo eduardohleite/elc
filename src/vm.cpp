@@ -229,6 +229,27 @@ void Interpreter::run(const Block* program) {
             continue;
         }
 
+        const auto while_loop = dynamic_cast<WhileLoop*>(statement);
+        if (nullptr != while_loop) {
+            auto condition = eval_expression(while_loop->condition);
+            if (condition.type != Type::Boolean) {
+                cerr << "Invalid type for conditional statement." << endl;
+                throw -1; 
+            }
+
+            auto condition_value = std::get<bool>(condition.value);
+            if (condition_value) {
+                while (condition_value) {
+                    run(while_loop->block);
+
+                    // reevaluate condition
+                    condition = eval_expression(while_loop->condition);
+                    condition_value = std::get<bool>(condition.value);
+                }
+            }
+            continue;
+        }
+
         const auto for_loop = dynamic_cast<ForLoop*>(statement);
         if (nullptr != for_loop) {
             auto iterator = eval_expression(for_loop->iterator);
