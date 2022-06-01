@@ -133,6 +133,14 @@ Value Interpreter::eval_expression(const Expression& expression) {
         return call_function(&function_call);
     }
 
+    // range
+    const auto range_expr = dynamic_cast<const RangeExpression*>(expr_ptr);
+    if (nullptr != range_expr) {
+        auto args = vector<Expression*>({&range_expr->start, &range_expr->end});
+        auto function_call = FunctionCall(Identifier("range"), args);
+        return call_function(&function_call);
+    }
+
     // function call
     const auto function_call_expr = dynamic_cast<const FunctionCall*>(expr_ptr);
     if (nullptr != function_call_expr) {

@@ -115,6 +115,14 @@ public:
     VectorExpression(std::vector<Expression*>& arguments): arguments(arguments) { }
 };
 
+class RangeExpression: public Expression {
+public:
+    Expression& start;
+    Expression& end;
+
+    RangeExpression(Expression& start, Expression& end): start(start), end(end) { }
+};
+
 class Assignment: public Statement {
 public:
     const Identifier& id;

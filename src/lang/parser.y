@@ -21,7 +21,7 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 %token <string> TIDENTIFIER TINTEGER TFLOAT
 %token <string> TIF TELSE TEND
 %token <string> TTRUE TFALSE
-%token <token> TLPAREN TRPAREN TLBRACKET TRBRACKET TCOMMA TASSIGN
+%token <token> TLPAREN TRPAREN TLBRACKET TRBRACKET TCOMMA TASSIGN TCOLON
 
 %type <identifier> identifier
 %type <expression> number boolean expression
@@ -77,6 +77,7 @@ expression : identifier TLPAREN arguments TRPAREN { $$ = new ELang::Meta::Functi
            | expression comparison expression { $$ = new ELang::Meta::ComparisonExpression(*$1, $2, *$3); }
            | TNOT expression { $$ = new ELang::Meta::NegatedBinaryExpression(*$2); }
            | expression binary expression { $$ = new ELang::Meta::BinaryExpression(*$1, $2, *$3); }
+           | expression TCOLON expression { $$ = new ELang::Meta::RangeExpression(*$1, *$3); }
            | TLPAREN expression TRPAREN { $$ = $2; }
            | TLBRACKET arguments TRBRACKET { $$ = new ELang::Meta::VectorExpression(*$2); delete $2; }
            ;

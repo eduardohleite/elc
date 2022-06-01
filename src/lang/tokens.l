@@ -33,6 +33,7 @@ extern "C" int yywrap() { }
 "\[" return TOKEN(TLBRACKET);
 "\]" return TOKEN(TRBRACKET);
 ","  return TOKEN(TCOMMA);
+":"  return TOKEN(TCOLON);
 
 "==" return TOKEN(TEQ);
 "!=" return TOKEN(TNE);
