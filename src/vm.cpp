@@ -173,6 +173,35 @@ void Interpreter::run(const Block* program) {
         const auto statement = *it;
 
         // check for statement types
+
+        const auto if_statement = dynamic_cast<IfStatement*>(statement);
+        if (nullptr != if_statement) {
+            auto condition = eval_expression(if_statement->condition);
+            if (condition.type != Type::Boolean) {
+                cerr << "Invalid type for conditional statement." << endl;
+                throw -1;
+            }
+
+            auto condition_value = std::get<bool>(condition.value);
+            if (condition_value) {
+                run(if_statement->then_block);
+            }
+            else {
+                if (nullptr != if_statement->else_block) {
+                    run(if_statement->else_block);
+                }
+            }
+            continue;
+        }
+
+        
+        const auto assignment = dynamic_cast<Assignment*>(statement);
+        if (nullptr != assignment) {
+            auto value = eval_expression(assignment->expression);
+            execution_context.assign_variable(assignment->id.name, value);
+            continue;
+        }
+
         const auto expression_statement = dynamic_cast<ExpressionStatement*>(statement);
         if (nullptr != expression_statement) {
             const auto res = eval_expression(expression_statement->expression);
@@ -180,12 +209,7 @@ void Interpreter::run(const Block* program) {
             continue;
         }
 
-        const auto assignment = dynamic_cast<Assignment*>(statement);
-        if (nullptr != assignment) {
-            auto value = eval_expression(assignment->expression);
-            execution_context.assign_variable(assignment->id.name, value);
-            continue;
-        }
+        
     }
 }
 

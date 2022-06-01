@@ -117,5 +117,17 @@ public:
         id(id), expression(expression) { }
 };
 
+class IfStatement: public Statement {
+public:
+    Expression& condition;
+    Block* then_block;
+    Block* else_block;
+
+    IfStatement(Expression& condition, Block* then_block):
+        condition(condition), then_block(then_block) { }
+    IfStatement(Expression& condition, Block* then_block, Block* else_block):
+        condition(condition), then_block(then_block), else_block(else_block) { }
+};
+
 } // namespace Meta
 } // namespace ELang
