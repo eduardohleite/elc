@@ -28,6 +28,17 @@ Value Interpreter::eval_expression(const Expression& expression) {
         return bool_expr->value;
     }
 
+    // vector expression
+    const auto vector_expr = dynamic_cast<const VectorExpression*>(expr_ptr);
+    if (nullptr != vector_expr) {
+        auto vec = make_shared<vector<Value>>();
+        for (auto it = vector_expr->arguments.begin(); it != vector_expr->arguments.end(); it++) {
+            vec->push_back(eval_expression(**it));
+        }
+
+        return Value(vec);
+    }
+
     // negated binary expression
     const auto negated_binary_expr = dynamic_cast<const NegatedBinaryExpression*>(expr_ptr);
     if (nullptr != negated_binary_expr) {
@@ -122,6 +133,30 @@ Value Interpreter::eval_expression(const Expression& expression) {
         return call_function(&function_call);
     }
 
+    // range
+    const auto range_expr = dynamic_cast<const RangeExpression*>(expr_ptr);
+    if (nullptr != range_expr) {
+        auto args = vector<Expression*>({&range_expr->start, &range_expr->end});
+        auto function_call = FunctionCall(Identifier("range"), args);
+        return call_function(&function_call);
+    }
+
+    // search
+    const auto search_expr = dynamic_cast<const SearchExpression*>(expr_ptr);
+    if (nullptr != search_expr) {
+        auto args = vector<Expression*>({&search_expr->collection, &search_expr->element});
+        auto function_call = FunctionCall(Identifier("__in__"), args);
+        return call_function(&function_call);
+    }
+
+    // index
+    const auto index_expr = dynamic_cast<const IndexExpression*>(expr_ptr);
+    if (nullptr != index_expr) {
+        auto args = vector<Expression*>({&index_expr->identifier_expression, &index_expr->expression});
+        auto function_call = FunctionCall(Identifier("__at__"), args);
+        return call_function(&function_call);
+    }
+
     // function call
     const auto function_call_expr = dynamic_cast<const FunctionCall*>(expr_ptr);
     if (nullptr != function_call_expr) {
@@ -155,7 +190,7 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression) {
             auto match = true;
 
             for (auto i = 0; i < it->arguments.size(); i++) {
-                match &= (it->arguments[i].type == expression_values[i].type);
+                match &= (it->arguments[i].type == Type::Any || it->arguments[i].type == expression_values[i].type);
             }
 
             if (match) {
@@ -193,7 +228,6 @@ void Interpreter::run(const Block* program) {
             }
             continue;
         }
-
         
         const auto assignment = dynamic_cast<Assignment*>(statement);
         if (nullptr != assignment) {
@@ -208,8 +242,6 @@ void Interpreter::run(const Block* program) {
             print_value(res);
             continue;
         }
-
-        
     }
 }
 
@@ -225,6 +257,31 @@ void Interpreter::print_value(const Value& v) const {
             break;
         case Type::Boolean:
             cout << (std::get<bool>(v.value) ? "true" : "false") << " (type: Boolean)";
+            break;
+        case Type::Vector:
+            auto vec = std::get<shared_ptr<vector<Value>>>(v.value);
+            cout << "Vector with " << vec->size() << " elements:" << endl;
+            for (auto i = 0; i< vec->size(); i++) {
+                cout << i << ": ";
+                auto el = vec->at(i);
+
+                switch (el.type) {
+                    case Type::Integer:
+                        cout << std::get<long>(el.value) << " (type: Integer)";
+                        break;
+                    case Type::Float:
+                        cout << std::get<double>(el.value) << " (type: Float)";
+                        break;
+                    case Type::Boolean:
+                        cout << (std::get<bool>(el.value) ? "true" : "false") << " (type: Boolean)";
+                        break;
+                    case Type::Vector:
+                        cout << "(type: Vector)";
+                        break;
+                }
+
+                cout << endl;
+            }
             break;
     }
 
@@ -276,21 +333,35 @@ void Interpreter::register_builtins() {
 
     execution_context.register_method(Method("__gt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_gt));
     execution_context.register_method(Method("__gt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_gt));
-    execution_context.register_method(Method("__gt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },  builtin_gt));
+    execution_context.register_method(Method("__gt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_gt));
     execution_context.register_method(Method("__gt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_gt));
     execution_context.register_method(Method("__gt__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_gt));
 
-    execution_context.register_method(Method("__lte__",{ Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },builtin_lte));
-    execution_context.register_method(Method("__lte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },builtin_lte));
+    execution_context.register_method(Method("__lte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_lte));
+    execution_context.register_method(Method("__lte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_lte));
     execution_context.register_method(Method("__lte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_lte));
     execution_context.register_method(Method("__lte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_lte));
     execution_context.register_method(Method("__lte__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_lte));
 
-    execution_context.register_method(Method("__lt__",{ Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },builtin_lt));
-    execution_context.register_method(Method("__lt__",{ Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },builtin_lt));
-    execution_context.register_method(Method("__lt__",{ Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },builtin_lt));
+    execution_context.register_method(Method("__lt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_lt));
+    execution_context.register_method(Method("__lt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_lt));
+    execution_context.register_method(Method("__lt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_lt));
     execution_context.register_method(Method("__lt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_lt));
-    execution_context.register_method(Method("__lt__",{ Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) },builtin_lt));
+    execution_context.register_method(Method("__lt__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_lt));
+
+    // vector function
+    execution_context.register_method(Method("zeros", { Argument("n", Type::Integer) }, builtin_zeros));
+    execution_context.register_method(Method("ones", { Argument("n", Type::Integer) }, builtin_ones));
+    execution_context.register_method(Method("length", { Argument("vec", Type::Vector) }, builtin_length));
+
+    execution_context.register_method(Method("range", { Argument("max", Type::Integer) }, builtin_range));
+    execution_context.register_method(Method("range", { Argument("min", Type::Integer), Argument("max", Type::Integer) }, builtin_range));
+
+    execution_context.register_method(Method("push!", { Argument("vec", Type::Vector), Argument("value", Type::Any) }, builtin_push_bang));
+    execution_context.register_method(Method("pop!", { Argument("vec", Type::Vector) }, builtin_pop_bang));
+
+    execution_context.register_method(Method("__at__", { Argument("vec", Type::Vector), Argument("index", Type::Integer) }, builtin_at));
+    execution_context.register_method(Method("__in__", { Argument("vec", Type::Vector), Argument("value", Type::Any) }, builtin_in));
 }
 
 void Context::register_method(const Method method) {

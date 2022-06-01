@@ -23,14 +23,19 @@ extern "C" int yywrap() { }
 "else" return TOKEN(TELSE);
 "end"  return TOKEN(TEND);
 
-[a-zA-Z_][a-zA-Z0-9_]* SAVE_TOKEN; return TIDENTIFIER;
+"in" return TOKEN(TIN);
+
+[a-zA-Z_][a-zA-Z0-9_]*!? SAVE_TOKEN; return TIDENTIFIER;
 
 [0-9]+\.[0-9]* SAVE_TOKEN; return TFLOAT;
 [0-9]+         SAVE_TOKEN; return TINTEGER;
 
-"(" return TOKEN(TLPAREN);
-")" return TOKEN(TRPAREN);
-"," return TOKEN(TCOMMA);
+"("  return TOKEN(TLPAREN);
+")"  return TOKEN(TRPAREN);
+"\[" return TOKEN(TLBRACKET);
+"\]" return TOKEN(TRBRACKET);
+","  return TOKEN(TCOMMA);
+":"  return TOKEN(TCOLON);
 
 "==" return TOKEN(TEQ);
 "!=" return TOKEN(TNE);

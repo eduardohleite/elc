@@ -26,5 +26,16 @@ Value builtin_gt(std::vector<Value> params);
 Value builtin_lte(std::vector<Value> params);
 Value builtin_lt(std::vector<Value> params);
 
+// vectors
+Value builtin_zeros(std::vector<Value> params);
+Value builtin_ones(std::vector<Value> params);
+Value builtin_length(std::vector<Value> params);
+Value builtin_range(std::vector<Value> params);
+Value builtin_push_bang(std::vector<Value> params);
+Value builtin_pop_bang(std::vector<Value> params);
+Value builtin_popat_bang(std::vector<Value> params);
+Value builtin_at(std::vector<Value> params);
+Value builtin_in(std::vector<Value> params);
+
 } // namespace Runtime
 } // namespace ELang

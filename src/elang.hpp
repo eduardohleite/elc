@@ -108,6 +108,38 @@ public:
     FunctionCall(const Identifier& id): id(id) { }
 };
 
+class VectorExpression: public Expression {
+public:
+    std::vector<Expression*> arguments;
+
+    VectorExpression(std::vector<Expression*>& arguments): arguments(arguments) { }
+};
+
+class RangeExpression: public Expression {
+public:
+    Expression& start;
+    Expression& end;
+
+    RangeExpression(Expression& start, Expression& end): start(start), end(end) { }
+};
+
+class SearchExpression: public Expression {
+public:
+    Expression& collection;
+    Expression& element;
+
+    SearchExpression(Expression& collection, Expression& element): collection(collection), element(element) { }
+};
+
+class IndexExpression: public Expression {
+public:
+    Expression& identifier_expression;
+    Expression& expression;
+
+    IndexExpression(Expression& identifier_expression, Expression& expression):
+        identifier_expression(identifier_expression), expression(expression) { }
+};
+
 class Assignment: public Statement {
 public:
     const Identifier& id;

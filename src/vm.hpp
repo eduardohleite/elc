@@ -5,18 +5,22 @@
 #include <map>
 #include <string>
 #include <functional>
-
-using namespace std;
+#include <memory>
+#include <vector>
 
 namespace ELang {
 namespace Runtime {
 
-typedef variant<monostate, long, double, bool> Variant;
+class Value; // forward declaration
+
+typedef std::variant<std::monostate, long, double, bool, std::shared_ptr<std::vector<Value>>> Variant;
 
 enum class Type {
+    Any,
     Integer,
     Float,
-    Boolean
+    Boolean,
+    Vector
 };
 
 
@@ -25,6 +29,8 @@ public:
     Value(long value): value(value), type(Type::Integer) { }
     Value(double value): value(value), type(Type::Float) { }
     Value(bool value): value(value), type(Type::Boolean) { }
+    Value(std::shared_ptr<std::vector<Value>> value): value(value), type(Type::Vector) { }
+
     Value() { }
 
     Type type;
@@ -34,30 +40,30 @@ public:
 class Argument {
 public:
     Type type;
-    string name;
+    std::string name;
 
-    Argument(string name, Type type): name(name), type(type) { }
+    Argument(std::string name, Type type): name(name), type(type) { }
 };
 
 class Method {
 public:
-    string identifier;
-    vector<Argument> arguments;
-    function<Value(vector<Value>&)> callable;
+    std::string identifier;
+    std::vector<Argument> arguments;
+    std::function<Value(std::vector<Value>&)> callable;
 
-    Method(string identifier, vector<Argument> arguments, function<Value(vector<Value>&)> callable):
+    Method(std::string identifier, std::vector<Argument> arguments, std::function<Value(std::vector<Value>&)> callable):
         identifier(identifier), arguments(arguments), callable(callable) { }
 };
 
 class Context {
 public:
-    map<string, vector<Method>> methods;
-    map<string, Value> variables;
+    std::map<std::string, std::vector<Method>> methods;
+    std::map<std::string, Value> variables;
 
     Context(): methods(), variables() { }
     void register_method(const Method method);
-    void assign_variable(const string name, Value value);
-    Value read_variable(const string name);
+    void assign_variable(const std::string name, Value value);
+    Value read_variable(const std::string name);
 };
 
 class Interpreter {

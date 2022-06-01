@@ -21,7 +21,7 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 %token <string> TIDENTIFIER TINTEGER TFLOAT
 %token <string> TIF TELSE TEND
 %token <string> TTRUE TFALSE
-%token <token> TLPAREN TRPAREN TCOMMA TASSIGN
+%token <token> TLPAREN TRPAREN TLBRACKET TRBRACKET TCOMMA TASSIGN TCOLON TIN
 
 %type <identifier> identifier
 %type <expression> number boolean expression
@@ -30,7 +30,7 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 %type <statement> statement if_stmt
 %type <token> arithmetic binary comparison
 
-%nonassoc TEQ TNE TGTE TGT TLTE TLT
+%nonassoc TEQ TNE TGTE TGT TLTE TLT TIN
 
 %left TAND TOR
 %left TNOT
@@ -73,11 +73,15 @@ expression : identifier TLPAREN arguments TRPAREN { $$ = new ELang::Meta::Functi
            | number
            | boolean
            | identifier
+           | identifier TLBRACKET expression TRBRACKET { $$ = new ELang::Meta::IndexExpression(*$1, *$3); }
            | expression arithmetic expression { $$ = new ELang::Meta::ArithmeticExpression(*$1, $2, *$3); }
            | expression comparison expression { $$ = new ELang::Meta::ComparisonExpression(*$1, $2, *$3); }
            | TNOT expression { $$ = new ELang::Meta::NegatedBinaryExpression(*$2); }
            | expression binary expression { $$ = new ELang::Meta::BinaryExpression(*$1, $2, *$3); }
+           | expression TCOLON expression { $$ = new ELang::Meta::RangeExpression(*$1, *$3); }
+           | expression TIN expression { $$ = new ELang::Meta::SearchExpression(*$3, *$1); }
            | TLPAREN expression TRPAREN { $$ = $2; }
+           | TLBRACKET arguments TRBRACKET { $$ = new ELang::Meta::VectorExpression(*$2); delete $2; }
            ;
 
 arguments  : { $$ = new std::vector<ELang::Meta::Expression*>(); }
