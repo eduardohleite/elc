@@ -161,5 +161,24 @@ public:
         condition(condition), then_block(then_block), else_block(else_block) { }
 };
 
+class ForLoop: public Statement {
+public:
+    const Identifier& id;
+    Expression& iterator;
+    Block* block;
+
+    ForLoop(const Identifier& id, Expression& iterator, Block* block):
+        id(id), iterator(iterator), block(block) { }
+};
+
+class WhileLoop: public Statement {
+public:
+    Expression& condition;
+    Block* block;
+
+    WhileLoop(Expression& condition, Block* block):
+        condition(condition), block(block) { }
+};
+
 } // namespace Meta
 } // namespace ELang

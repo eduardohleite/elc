@@ -19,9 +19,11 @@ extern "C" int yywrap() { }
 "or"  return TOKEN(TOR);
 "not" return TOKEN(TNOT);
 
-"if"   return TOKEN(TIF);
-"else" return TOKEN(TELSE);
-"end"  return TOKEN(TEND);
+"if"    return TOKEN(TIF);
+"else"  return TOKEN(TELSE);
+"for"   return TOKEN(TFOR);
+"while" return TOKEN(TWHILE);
+"end"   return TOKEN(TEND);
 
 "in" return TOKEN(TIN);
 

@@ -228,6 +228,43 @@ void Interpreter::run(const Block* program) {
             }
             continue;
         }
+
+        const auto while_loop = dynamic_cast<WhileLoop*>(statement);
+        if (nullptr != while_loop) {
+            auto condition = eval_expression(while_loop->condition);
+            if (condition.type != Type::Boolean) {
+                cerr << "Invalid type for conditional statement." << endl;
+                throw -1; 
+            }
+
+            auto condition_value = std::get<bool>(condition.value);
+            if (condition_value) {
+                while (condition_value) {
+                    run(while_loop->block);
+
+                    // reevaluate condition
+                    condition = eval_expression(while_loop->condition);
+                    condition_value = std::get<bool>(condition.value);
+                }
+            }
+            continue;
+        }
+
+        const auto for_loop = dynamic_cast<ForLoop*>(statement);
+        if (nullptr != for_loop) {
+            auto iterator = eval_expression(for_loop->iterator);
+            if (iterator.type != Type::Vector) { // todo: add other iterator types when available
+                cerr << "Invalid iterator." << endl;
+                throw -1;
+            }
+
+            auto iterator_value = std::get<shared_ptr<vector<Value>>>(iterator.value);
+            for (auto it = iterator_value->begin(); it != iterator_value->end(); it++) {
+                execution_context.assign_variable(for_loop->id.name, *it);
+                run(for_loop->block);
+            }
+            continue;
+        }
         
         const auto assignment = dynamic_cast<Assignment*>(statement);
         if (nullptr != assignment) {
