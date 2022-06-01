@@ -173,6 +173,35 @@ void Interpreter::run(const Block* program) {
         const auto statement = *it;
 
         // check for statement types
+
+        const auto if_statement = dynamic_cast<IfStatement*>(statement);
+        if (nullptr != if_statement) {
+            auto condition = eval_expression(if_statement->condition);
+            if (condition.type != Type::Boolean) {
+                cerr << "Invalid type for conditional statement." << endl;
+                throw -1;
+            }
+
+            auto condition_value = std::get<bool>(condition.value);
+            if (condition_value) {
+                run(if_statement->then_block);
+            }
+            else {
+                if (nullptr != if_statement->else_block) {
+                    run(if_statement->else_block);
+                }
+            }
+            continue;
+        }
+
+        
+        const auto assignment = dynamic_cast<Assignment*>(statement);
+        if (nullptr != assignment) {
+            auto value = eval_expression(assignment->expression);
+            execution_context.assign_variable(assignment->id.name, value);
+            continue;
+        }
+
         const auto expression_statement = dynamic_cast<ExpressionStatement*>(statement);
         if (nullptr != expression_statement) {
             const auto res = eval_expression(expression_statement->expression);
@@ -180,12 +209,7 @@ void Interpreter::run(const Block* program) {
             continue;
         }
 
-        const auto assignment = dynamic_cast<Assignment*>(statement);
-        if (nullptr != assignment) {
-            auto value = eval_expression(assignment->expression);
-            execution_context.assign_variable(assignment->id.name, value);
-            continue;
-        }
+        
     }
 }
 
@@ -208,261 +232,65 @@ void Interpreter::print_value(const Value& v) const {
 }
 
 void Interpreter::register_builtins() {
-    execution_context.register_method(
-        Method("__add__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
-              builtin_add)
-    );
-    execution_context.register_method(
-        Method("__add__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
-              builtin_add)
-    );
-    execution_context.register_method(
-        Method("__add__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
-              builtin_add)
-    );
-    execution_context.register_method(
-        Method("__add__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
-              builtin_add)
-    );
+    execution_context.register_method(Method("__add__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_add));
+    execution_context.register_method(Method("__add__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_add));
+    execution_context.register_method(Method("__add__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_add));
+    execution_context.register_method(Method("__add__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_add));
 
-    execution_context.register_method(
-        Method("__sub__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
-              builtin_sub)
-    );
-    execution_context.register_method(
-        Method("__sub__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
-              builtin_sub)
-    );
-    execution_context.register_method(
-        Method("__sub__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
-              builtin_sub)
-    );
-    execution_context.register_method(
-        Method("__sub__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
-              builtin_sub)
-    );
+    execution_context.register_method(Method("__sub__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_sub));
+    execution_context.register_method(Method("__sub__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_sub));
+    execution_context.register_method(Method("__sub__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_sub));
+    execution_context.register_method(Method("__sub__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_sub));
 
-    execution_context.register_method(
-        Method("__mul__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
-              builtin_mul)
-    );
-    execution_context.register_method(
-        Method("__mul__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
-              builtin_mul)
-    );
-    execution_context.register_method(
-        Method("__mul__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
-              builtin_mul)
-    );
-    execution_context.register_method(
-        Method("__mul__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
-              builtin_mul)
-    );
+    execution_context.register_method(Method("__mul__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_mul));
+    execution_context.register_method(Method("__mul__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_mul));
+    execution_context.register_method(Method("__mul__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_mul));
+    execution_context.register_method(Method("__mul__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_mul));
 
-    execution_context.register_method(
-        Method("__div__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
-              builtin_div)
-    );
-    execution_context.register_method(
-        Method("__div__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
-              builtin_div)
-    );
-    execution_context.register_method(
-        Method("__div__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
-              builtin_div)
-    );
-    execution_context.register_method(
-        Method("__div__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
-              builtin_div)
-    );
+    execution_context.register_method(Method("__div__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_div));
+    execution_context.register_method(Method("__div__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_div));
+    execution_context.register_method(Method("__div__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_div));
+    execution_context.register_method(Method("__div__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_div));
 
-    execution_context.register_method(
-        Method("__not__",
-              { Argument("expr", Type::Boolean) },
-              builtin_not)
-    );
-    execution_context.register_method(
-        Method("__and__",
-              { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) },
-              builtin_and)
-    );
-    execution_context.register_method(
-        Method("__or__",
-              { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) },
-              builtin_or)
-    );
+    execution_context.register_method(Method("__not__", { Argument("expr", Type::Boolean) }, builtin_not));
+    execution_context.register_method(Method("__and__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_and));
+    execution_context.register_method(Method("__or__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_or));
 
-    execution_context.register_method(
-        Method("__eq__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
-              builtin_eq)
-    );
-    execution_context.register_method(
-        Method("__eq__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
-              builtin_eq)
-    );
-    execution_context.register_method(
-        Method("__eq__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
-              builtin_eq)
-    );
-    execution_context.register_method(
-        Method("__eq__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
-              builtin_eq)
-    );
-    execution_context.register_method(
-        Method("__eq__",
-              { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) },
-              builtin_eq)
-    );
+    execution_context.register_method(Method("__eq__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_eq));
+    execution_context.register_method(Method("__eq__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_eq));
+    execution_context.register_method(Method("__eq__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_eq));
+    execution_context.register_method(Method("__eq__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_eq));
+    execution_context.register_method(Method("__eq__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_eq));
 
-    execution_context.register_method(
-        Method("__ne__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
-              builtin_ne)
-    );
-    execution_context.register_method(
-        Method("__ne__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
-              builtin_ne)
-    );
-    execution_context.register_method(
-        Method("__ne__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
-              builtin_ne)
-    );
-    execution_context.register_method(
-        Method("__ne__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
-              builtin_ne)
-    );
-    execution_context.register_method(
-        Method("__ne__",
-              { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) },
-              builtin_ne)
-    );
+    execution_context.register_method(Method("__ne__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_ne));
+    execution_context.register_method(Method("__ne__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_ne));
+    execution_context.register_method(Method("__ne__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_ne));
+    execution_context.register_method(Method("__ne__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_ne));
+    execution_context.register_method(Method("__ne__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_ne));
 
-    execution_context.register_method(
-        Method("__gte__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
-              builtin_gte)
-    );
-    execution_context.register_method(
-        Method("__gte__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
-              builtin_gte)
-    );
-    execution_context.register_method(
-        Method("__gte__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
-              builtin_gte)
-    );
-    execution_context.register_method(
-        Method("__gte__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
-              builtin_gte)
-    );
-    execution_context.register_method(
-        Method("__gte__",
-              { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) },
-              builtin_gte)
-    );
+    execution_context.register_method(Method("__gte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_gte));
+    execution_context.register_method(Method("__gte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_gte));
+    execution_context.register_method(Method("__gte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_gte));
+    execution_context.register_method(Method("__gte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_gte));
+    execution_context.register_method(Method("__gte__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_gte));
 
-    execution_context.register_method(
-        Method("__gt__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
-              builtin_gt)
-    );
-    execution_context.register_method(
-        Method("__gt__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
-              builtin_gt)
-    );
-    execution_context.register_method(
-        Method("__gt__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
-              builtin_gt)
-    );
-    execution_context.register_method(
-        Method("__gt__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
-              builtin_gt)
-    );
-    execution_context.register_method(
-        Method("__gt__",
-              { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) },
-              builtin_gt)
-    );
+    execution_context.register_method(Method("__gt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_gt));
+    execution_context.register_method(Method("__gt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_gt));
+    execution_context.register_method(Method("__gt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },  builtin_gt));
+    execution_context.register_method(Method("__gt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_gt));
+    execution_context.register_method(Method("__gt__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_gt));
 
-    execution_context.register_method(
-        Method("__lte__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
-              builtin_lte)
-    );
-    execution_context.register_method(
-        Method("__lte__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
-              builtin_lte)
-    );
-    execution_context.register_method(
-        Method("__lte__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
-              builtin_lte)
-    );
-    execution_context.register_method(
-        Method("__lte__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
-              builtin_lte)
-    );
-    execution_context.register_method(
-        Method("__lte__",
-              { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) },
-              builtin_lte)
-    );
+    execution_context.register_method(Method("__lte__",{ Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },builtin_lte));
+    execution_context.register_method(Method("__lte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },builtin_lte));
+    execution_context.register_method(Method("__lte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_lte));
+    execution_context.register_method(Method("__lte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_lte));
+    execution_context.register_method(Method("__lte__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_lte));
 
-    execution_context.register_method(
-        Method("__lt__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },
-              builtin_lt)
-    );
-    execution_context.register_method(
-        Method("__lt__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },
-              builtin_lt)
-    );
-    execution_context.register_method(
-        Method("__lt__",
-              { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },
-              builtin_lt)
-    );
-    execution_context.register_method(
-        Method("__lt__",
-              { Argument("lhs", Type::Float), Argument("rhs", Type::Float) },
-              builtin_lt)
-    );
-    execution_context.register_method(
-        Method("__lt__",
-              { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) },
-              builtin_lt)
-    );
+    execution_context.register_method(Method("__lt__",{ Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) },builtin_lt));
+    execution_context.register_method(Method("__lt__",{ Argument("lhs", Type::Float), Argument("rhs", Type::Integer) },builtin_lt));
+    execution_context.register_method(Method("__lt__",{ Argument("lhs", Type::Integer), Argument("rhs", Type::Float) },builtin_lt));
+    execution_context.register_method(Method("__lt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_lt));
+    execution_context.register_method(Method("__lt__",{ Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) },builtin_lt));
 }
 
 void Context::register_method(const Method method) {

@@ -19,6 +19,7 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 }
 
 %token <string> TIDENTIFIER TINTEGER TFLOAT
+%token <string> TIF TELSE TEND
 %token <string> TTRUE TFALSE
 %token <token> TLPAREN TRPAREN TCOMMA TASSIGN
 
@@ -26,7 +27,7 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 %type <expression> number boolean expression
 %type <expressions> arguments
 %type <block> program statements
-%type <statement> statement
+%type <statement> statement if_stmt
 %type <token> arithmetic binary comparison
 
 %nonassoc TEQ TNE TGTE TGT TLTE TLT
@@ -50,6 +51,11 @@ statements : statement { $$ = new ELang::Meta::Block(); $$->statements.push_back
 
 statement  : expression { $$ = new ELang::Meta::ExpressionStatement(*$1); }
            | identifier TASSIGN expression { $$ = new ELang::Meta::Assignment(*$1, *$3); }
+           | if_stmt
+           ;
+
+if_stmt    : TIF expression statements TEND { $$ = new ELang::Meta::IfStatement(*$2, $3); }
+           | TIF expression statements TELSE statements TEND {$$ = new ELang::Meta::IfStatement(*$2, $3, $5); }
            ;
 
 identifier : TIDENTIFIER { $$ = new ELang::Meta::Identifier(*$1); delete $1; }

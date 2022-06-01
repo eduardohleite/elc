@@ -19,6 +19,10 @@ extern "C" int yywrap() { }
 "or"  return TOKEN(TOR);
 "not" return TOKEN(TNOT);
 
+"if"   return TOKEN(TIF);
+"else" return TOKEN(TELSE);
+"end"  return TOKEN(TEND);
+
 [a-zA-Z_][a-zA-Z0-9_]* SAVE_TOKEN; return TIDENTIFIER;
 
 [0-9]+\.[0-9]* SAVE_TOKEN; return TFLOAT;
