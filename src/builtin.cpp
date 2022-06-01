@@ -448,3 +448,28 @@ Value ELang::Runtime::builtin_push_bang(std::vector<Value> params) {
         // TODO: error - invalid parameter types
     }
 }
+
+Value ELang::Runtime::builtin_pop_bang(std::vector<Value> params) {
+    if (params.size() != 1) {
+        // TODO: invalid parameter count
+    }
+
+    auto vec = params.at(0);
+
+    if (vec.type == Type::Vector) {
+        auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
+        auto last_index = vecval->size();
+
+        if (last_index > 0) {
+            auto grab = vecval->at(last_index - 1);
+            vecval->pop_back();
+            return Value(grab);
+        }
+        else {
+            // TODO: error
+        }
+    }
+    else {
+        // TODO: error - invalid parameter types
+    }
+}

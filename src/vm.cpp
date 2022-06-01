@@ -236,7 +236,28 @@ void Interpreter::print_value(const Value& v) const {
             break;
         case Type::Vector:
             auto vec = std::get<shared_ptr<vector<Value>>>(v.value);
-            cout << "Vector with " << vec->size() << " elements" << endl;
+            cout << "Vector with " << vec->size() << " elements:" << endl;
+            for (auto i = 0; i< vec->size(); i++) {
+                cout << i << ": ";
+                auto el = vec->at(i);
+
+                switch (el.type) {
+                    case Type::Integer:
+                        cout << std::get<long>(el.value) << " (type: Integer)";
+                        break;
+                    case Type::Float:
+                        cout << std::get<double>(el.value) << " (type: Float)";
+                        break;
+                    case Type::Boolean:
+                        cout << (std::get<bool>(el.value) ? "true" : "false") << " (type: Boolean)";
+                        break;
+                    case Type::Vector:
+                        cout << "(type: Vector)";
+                        break;
+                }
+
+                cout << endl;
+            }
             break;
     }
 
@@ -313,6 +334,7 @@ void Interpreter::register_builtins() {
     execution_context.register_method(Method("range", { Argument("min", Type::Integer), Argument("max", Type::Integer) }, builtin_range));
 
     execution_context.register_method(Method("push!", { Argument("vec", Type::Vector), Argument("value", Type::Any) }, builtin_push_bang));
+    execution_context.register_method(Method("pop!", { Argument("vec", Type::Vector) }, builtin_pop_bang));
 }
 
 void Context::register_method(const Method method) {
