@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     Interpreter runtime;
     runtime.register_builtins();
 
-    runtime.run(main_block);
+    runtime.run(main_block, runtime.global_context);
 
     return 0;
 }

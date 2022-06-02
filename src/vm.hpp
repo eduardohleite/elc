@@ -76,26 +76,30 @@ class Context {
 public:
     std::map<std::string, std::vector<std::shared_ptr<Method>>> methods;
     std::map<std::string, Value> variables;
+    std::shared_ptr<Context> parent;
 
-    Context(): methods(), variables() { }
+    Context(): parent(nullptr), methods(), variables() { }
+    Context(std::shared_ptr<Context> parent) : parent(parent), methods(), variables() { }
+
     void register_method(const std::shared_ptr<Method> method);
     void assign_variable(const std::string name, Value value);
     Value read_variable(const std::string name);
+    void locate_methods(std::vector<std::shared_ptr<ELang::Runtime::Method>>& results, const std::string& name) const;
 };
 
 class Interpreter {
 public:
-    Interpreter() { }
+    Interpreter();
     ~Interpreter() { }
 
-    Context execution_context;
+    std::shared_ptr<Context> global_context;
 
-    void run(const ELang::Meta::Block* program);
+    void run(const ELang::Meta::Block* program, std::shared_ptr<Context> context);
     void register_builtins();
 
 protected:
-    Value eval_expression(const ELang::Meta::Expression& expression);
-    Value call_function(const ELang::Meta::FunctionCall* expression);
+    Value eval_expression(const ELang::Meta::Expression& expression, std::shared_ptr<Context> context);
+    Value call_function(const ELang::Meta::FunctionCall* expression, std::shared_ptr<Context> context);    
     void print_value(const Value& value) const;
 };
 

@@ -6,7 +6,7 @@ using namespace ELang::Runtime;
 using namespace ELang::Meta;
 using namespace std;
 
-Value Interpreter::eval_expression(const Expression& expression) {
+Value Interpreter::eval_expression(const Expression& expression, std::shared_ptr<Context> context) {
     // check for expression types
     const auto expr_ptr = &expression;
 
@@ -33,7 +33,7 @@ Value Interpreter::eval_expression(const Expression& expression) {
     if (nullptr != vector_expr) {
         auto vec = make_shared<vector<Value>>();
         for (auto it = vector_expr->arguments.begin(); it != vector_expr->arguments.end(); it++) {
-            vec->push_back(eval_expression(**it));
+            vec->push_back(eval_expression(**it, context));
         }
 
         return Value(vec);
@@ -46,7 +46,7 @@ Value Interpreter::eval_expression(const Expression& expression) {
         auto args = vector<Expression*>({&negated_binary_expr->expr});
 
         auto function_call = FunctionCall(identifier, args);
-        return call_function(&function_call);
+        return call_function(&function_call, context);
     }
 
     // binary expression
@@ -68,7 +68,7 @@ Value Interpreter::eval_expression(const Expression& expression) {
         }
 
         auto function_call = FunctionCall(identifier, args);
-        return call_function(&function_call);
+        return call_function(&function_call, context);
     }
 
     // arithmetic expression
@@ -96,7 +96,7 @@ Value Interpreter::eval_expression(const Expression& expression) {
         }
 
         auto function_call = FunctionCall(identifier, args);
-        return call_function(&function_call);
+        return call_function(&function_call, context);
     }
 
     // comparison expression
@@ -130,7 +130,7 @@ Value Interpreter::eval_expression(const Expression& expression) {
         }
 
         auto function_call = FunctionCall(identifier, args);
-        return call_function(&function_call);
+        return call_function(&function_call, context);
     }
 
     // range
@@ -138,7 +138,7 @@ Value Interpreter::eval_expression(const Expression& expression) {
     if (nullptr != range_expr) {
         auto args = vector<Expression*>({&range_expr->start, &range_expr->end});
         auto function_call = FunctionCall(Identifier("range"), args);
-        return call_function(&function_call);
+        return call_function(&function_call, context);
     }
 
     // search
@@ -146,7 +146,7 @@ Value Interpreter::eval_expression(const Expression& expression) {
     if (nullptr != search_expr) {
         auto args = vector<Expression*>({&search_expr->collection, &search_expr->element});
         auto function_call = FunctionCall(Identifier("__in__"), args);
-        return call_function(&function_call);
+        return call_function(&function_call, context);
     }
 
     // index
@@ -154,35 +154,48 @@ Value Interpreter::eval_expression(const Expression& expression) {
     if (nullptr != index_expr) {
         auto args = vector<Expression*>({&index_expr->identifier_expression, &index_expr->expression});
         auto function_call = FunctionCall(Identifier("__at__"), args);
-        return call_function(&function_call);
+        return call_function(&function_call, context);
     }
 
     // function call
     const auto function_call_expr = dynamic_cast<const FunctionCall*>(expr_ptr);
     if (nullptr != function_call_expr) {
-        return call_function(function_call_expr);
+        return call_function(function_call_expr, context);
     }
 
     // identifier
     const auto identifier_expr = dynamic_cast<const Identifier*>(expr_ptr);
     if (nullptr != identifier_expr) {
-        return execution_context.read_variable(identifier_expr->name);
+        return context->read_variable(identifier_expr->name);
     }
 }
 
-Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression) {
-    auto fun = execution_context.methods.find(expression->id.name);
-    if (fun == execution_context.methods.end()) {
-        cerr << "Error: Unknown function `" << expression->id.name << "`" << endl;
-        throw -1;
+void Context::locate_methods(std::vector<std::shared_ptr<ELang::Runtime::Method>>& results, const std::string& name) const {
+    auto fun = methods.find(name);
+
+    if (fun != methods.end()) {
+        auto found = fun->second;
+        results.insert(results.end(), found.begin(), found.end());
     }
 
-    auto methods = fun->second;
+    if (nullptr != parent) {
+        parent->locate_methods(results, name);
+    }
+}
+
+Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, std::shared_ptr<Context> context) {
+    auto methods = std::vector<std::shared_ptr<ELang::Runtime::Method>>();
+    context->locate_methods(methods, expression->id.name);
 
     // parse expression arguments into values
     auto expression_values = vector<Value>();
     for (auto it = expression->arguments.begin(); it != expression->arguments.end(); it++) {
-        expression_values.push_back(eval_expression(**it));
+        expression_values.push_back(eval_expression(**it, context));
+    }
+
+    if (methods.size() == 0) {
+        cerr << "Error: Unknown function `" << expression->id.name << "`" << endl;
+        throw -1;
     }
 
     for (auto it = methods.begin(); it != methods.end(); it++) {       
@@ -205,7 +218,8 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression) {
                 if (nullptr != custom) {
                     // todo: inject params into context before executing block
                     // todo: function needs to return the last evaluated expression
-                    run(custom->block);
+                    auto block_context = make_shared<Context>(context);
+                    run(custom->block, block_context);
                     return Value();
                 }
             }
@@ -216,7 +230,7 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression) {
     throw -1;
 }
 
-void Interpreter::run(const Block* program) {
+void Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
     for (auto it = program->statements.begin(); it != program->statements.end(); it++) {
         const auto statement = *it;
 
@@ -224,7 +238,7 @@ void Interpreter::run(const Block* program) {
 
         const auto if_statement = dynamic_cast<IfStatement*>(statement);
         if (nullptr != if_statement) {
-            auto condition = eval_expression(if_statement->condition);
+            auto condition = eval_expression(if_statement->condition, context);
             if (condition.type != Type::Boolean) {
                 cerr << "Invalid type for conditional statement." << endl;
                 throw -1;
@@ -232,11 +246,13 @@ void Interpreter::run(const Block* program) {
 
             auto condition_value = std::get<bool>(condition.value);
             if (condition_value) {
-                run(if_statement->then_block);
+                auto block_context = make_shared<Context>(context);
+                run(if_statement->then_block, block_context);
             }
             else {
                 if (nullptr != if_statement->else_block) {
-                    run(if_statement->else_block);
+                    auto block_context = make_shared<Context>(context);
+                    run(if_statement->else_block, block_context);
                 }
             }
             continue;
@@ -244,7 +260,7 @@ void Interpreter::run(const Block* program) {
 
         const auto while_loop = dynamic_cast<WhileLoop*>(statement);
         if (nullptr != while_loop) {
-            auto condition = eval_expression(while_loop->condition);
+            auto condition = eval_expression(while_loop->condition, context);
             if (condition.type != Type::Boolean) {
                 cerr << "Invalid type for conditional statement." << endl;
                 throw -1; 
@@ -252,11 +268,13 @@ void Interpreter::run(const Block* program) {
 
             auto condition_value = std::get<bool>(condition.value);
             if (condition_value) {
+                auto block_context = make_shared<Context>(context);
+
                 while (condition_value) {
-                    run(while_loop->block);
+                    run(while_loop->block, block_context);
 
                     // reevaluate condition
-                    condition = eval_expression(while_loop->condition);
+                    condition = eval_expression(while_loop->condition, context);
                     condition_value = std::get<bool>(condition.value);
                 }
             }
@@ -265,16 +283,17 @@ void Interpreter::run(const Block* program) {
 
         const auto for_loop = dynamic_cast<ForLoop*>(statement);
         if (nullptr != for_loop) {
-            auto iterator = eval_expression(for_loop->iterator);
-            if (iterator.type != Type::Vector) { // todo: add other iterator types when available
+            auto iterator = eval_expression(for_loop->iterator, context);
+            if (iterator.type != Type::Vector) {
                 cerr << "Invalid iterator." << endl;
                 throw -1;
             }
 
+            auto block_context = make_shared<Context>(context);
             auto iterator_value = std::get<shared_ptr<vector<Value>>>(iterator.value);
             for (auto it = iterator_value->begin(); it != iterator_value->end(); it++) {
-                execution_context.assign_variable(for_loop->id.name, *it);
-                run(for_loop->block);
+                block_context->assign_variable(for_loop->id.name, *it);
+                run(for_loop->block, block_context);
             }
             continue;
         }
@@ -283,19 +302,19 @@ void Interpreter::run(const Block* program) {
         if (nullptr != func_decl) {
             // todo: we need some kind of validation here
             auto args = std::vector<Argument>();
-            execution_context.register_method(shared_ptr<Method>(new CustomMethod(func_decl->id.name, args, func_decl->block)));
+            context->register_method(shared_ptr<Method>(new CustomMethod(func_decl->id.name, args, func_decl->block)));
         }
         
         const auto assignment = dynamic_cast<Assignment*>(statement);
         if (nullptr != assignment) {
-            auto value = eval_expression(assignment->expression);
-            execution_context.assign_variable(assignment->id.name, value);
+            auto value = eval_expression(assignment->expression, context);
+            context->assign_variable(assignment->id.name, value);
             continue;
         }
 
         const auto expression_statement = dynamic_cast<ExpressionStatement*>(statement);
         if (nullptr != expression_statement) {
-            const auto res = eval_expression(expression_statement->expression);
+            const auto res = eval_expression(expression_statement->expression, context);
             print_value(res);
             continue;
         }
@@ -346,79 +365,83 @@ void Interpreter::print_value(const Value& v) const {
 }
 
 void Interpreter::register_builtins() {
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__add__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_add)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__add__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_add)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__add__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_add)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__add__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_add)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__add__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_add)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__add__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_add)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__add__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_add)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__add__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_add)));
 
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__sub__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_sub)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__sub__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_sub)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__sub__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_sub)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__sub__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_sub)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__sub__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_sub)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__sub__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_sub)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__sub__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_sub)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__sub__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_sub)));
 
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__mul__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_mul)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__mul__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_mul)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__mul__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_mul)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__mul__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_mul)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__mul__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_mul)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__mul__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_mul)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__mul__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_mul)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__mul__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_mul)));
 
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__div__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_div)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__div__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_div)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__div__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_div)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__div__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_div)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__div__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_div)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__div__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_div)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__div__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_div)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__div__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_div)));
 
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__not__", { Argument("expr", Type::Boolean) }, builtin_not)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__and__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_and)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__or__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_or)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__not__", { Argument("expr", Type::Boolean) }, builtin_not)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__and__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_and)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__or__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_or)));
 
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_eq)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_eq)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_eq)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_eq)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_eq)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_eq)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_eq)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_eq)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_eq)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_eq)));
 
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_ne)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_ne)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_ne)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_ne)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_ne)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_ne)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_ne)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_ne)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_ne)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_ne)));
 
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__gte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_gte)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__gte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_gte)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__gte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_gte)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__gte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_gte)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__gte__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_gte)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__gte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_gte)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__gte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_gte)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__gte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_gte)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__gte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_gte)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__gte__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_gte)));
 
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__gt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_gt)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__gt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_gt)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__gt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_gt)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__gt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_gt)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__gt__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_gt)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__gt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_gt)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__gt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_gt)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__gt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_gt)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__gt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_gt)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__gt__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_gt)));
 
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__lte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_lte)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__lte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_lte)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__lte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_lte)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__lte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_lte)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__lte__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_lte)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__lte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_lte)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__lte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_lte)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__lte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_lte)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__lte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_lte)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__lte__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_lte)));
 
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__lt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_lt)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__lt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_lt)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__lt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_lt)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__lt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_lt)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__lt__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_lt)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__lt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_lt)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__lt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_lt)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__lt__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_lt)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__lt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_lt)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__lt__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_lt)));
 
     // vector function
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("zeros", { Argument("n", Type::Integer) }, builtin_zeros)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("ones", { Argument("n", Type::Integer) }, builtin_ones)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("length", { Argument("vec", Type::Vector) }, builtin_length)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("zeros", { Argument("n", Type::Integer) }, builtin_zeros)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("ones", { Argument("n", Type::Integer) }, builtin_ones)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("length", { Argument("vec", Type::Vector) }, builtin_length)));
 
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("range", { Argument("max", Type::Integer) }, builtin_range)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("range", { Argument("min", Type::Integer), Argument("max", Type::Integer) }, builtin_range)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("range", { Argument("max", Type::Integer) }, builtin_range)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("range", { Argument("min", Type::Integer), Argument("max", Type::Integer) }, builtin_range)));
 
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("push!", { Argument("vec", Type::Vector), Argument("value", Type::Any) }, builtin_push_bang)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("pop!", { Argument("vec", Type::Vector) }, builtin_pop_bang)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("push!", { Argument("vec", Type::Vector), Argument("value", Type::Any) }, builtin_push_bang)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("pop!", { Argument("vec", Type::Vector) }, builtin_pop_bang)));
 
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__at__", { Argument("vec", Type::Vector), Argument("index", Type::Integer) }, builtin_at)));
-    execution_context.register_method(shared_ptr<Method>(new BuiltinMethod("__in__", { Argument("vec", Type::Vector), Argument("value", Type::Any) }, builtin_in)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__at__", { Argument("vec", Type::Vector), Argument("index", Type::Integer) }, builtin_at)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__in__", { Argument("vec", Type::Vector), Argument("value", Type::Any) }, builtin_in)));
+}
+
+Interpreter::Interpreter() {
+    global_context = std::make_shared<Context>();
 }
 
 void Context::register_method(const std::shared_ptr<Method> method) {
@@ -432,14 +455,21 @@ void Context::register_method(const std::shared_ptr<Method> method) {
 }
 
 void Context::assign_variable(const string name, Value value) {
+    // TODO: we can read variables from upper contexts
+    // but can only write to the current context
     variables[name] = value;
 }
 
 Value Context::read_variable(const string name) {
     auto it = variables.find(name);
     if (it == variables.end()) {
-        cerr << "Calling variable `" << name << "` before assignment." << endl;
-        throw -1;
+        if (nullptr != parent) {
+            return parent->read_variable(name);
+        }
+        else {
+            cerr << "Calling variable `" << name << "` before assignment." << endl;
+            throw -1;
+        }
     }
 
     return variables[name];
