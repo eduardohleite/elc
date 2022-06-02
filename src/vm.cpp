@@ -246,14 +246,10 @@ void Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
 
             auto condition_value = std::get<bool>(condition.value);
             if (condition_value) {
-                // auto block_context = make_shared<Context>(context);
-                // run(if_statement->then_block, block_context);
                 run(if_statement->then_block, context);
             }
             else {
                 if (nullptr != if_statement->else_block) {
-                    // auto block_context = make_shared<Context>(context);
-                    // run(if_statement->else_block, block_context);
                     run(if_statement->else_block, context);
                 }
             }
@@ -270,10 +266,8 @@ void Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
 
             auto condition_value = std::get<bool>(condition.value);
             if (condition_value) {
-                //auto block_context = make_shared<Context>(context);
 
                 while (condition_value) {
-                    //run(while_loop->block, block_context);
                     run(while_loop->block, context);
 
                     // reevaluate condition
@@ -292,11 +286,8 @@ void Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
                 throw -1;
             }
 
-            //auto block_context = make_shared<Context>(context);
             auto iterator_value = std::get<shared_ptr<vector<Value>>>(iterator.value);
             for (auto it = iterator_value->begin(); it != iterator_value->end(); it++) {
-                //block_context->assign_variable(for_loop->id.name, *it);
-                //run(for_loop->block, block_context);
                 context->assign_variable(for_loop->id.name, *it);
                 run(for_loop->block, context);
             }
