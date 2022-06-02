@@ -460,9 +460,24 @@ void Context::register_method(const std::shared_ptr<Method> method) {
 }
 
 void Context::assign_variable(const string name, Value value) {
-    // TODO: we can read variables from upper contexts
-    // but can only write to the current context
-    variables[name] = value;
+    // TODO: context disambiguation. i.e. local/global keywords
+    auto search_context = this;
+    auto variable_exists = false;
+
+    while (nullptr != search_context && !variable_exists) {
+        auto it = search_context->variables.find(name);
+        if (it == search_context->variables.end()) {
+            search_context = search_context->parent.get();
+        }
+        else {
+            variable_exists = true;
+            search_context->variables[name] = value;
+        }
+    }
+
+    if (!variable_exists) {
+        variables[name] = value;
+    }
 }
 
 Value Context::read_variable(const string name) {
