@@ -5,7 +5,7 @@ gen-lang:
 build: gen-lang
 	mkdir -p out/release
 	g++ -Isrc -std=c++17 \
-		-O3 -o out/release/elc \
+		-Ofast -o out/release/elc \
 		src/gen/parser.cpp \
 		src/gen/tokens.cpp \
 		src/builtin.cpp \
