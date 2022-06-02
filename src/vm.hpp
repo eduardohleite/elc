@@ -49,19 +49,36 @@ class Method {
 public:
     std::string identifier;
     std::vector<Argument> arguments;
+
+    Method(std::string identifier, std::vector<Argument> arguments):
+        identifier(identifier), arguments(arguments) { }
+
+    virtual ~Method() {}
+};
+
+class BuiltinMethod: public Method {
+public:
     std::function<Value(std::vector<Value>&)> callable;
 
-    Method(std::string identifier, std::vector<Argument> arguments, std::function<Value(std::vector<Value>&)> callable):
-        identifier(identifier), arguments(arguments), callable(callable) { }
+    BuiltinMethod(std::string identifier, std::vector<Argument> arguments, std::function<Value(std::vector<Value>&)> callable):
+        Method(identifier, arguments), callable(callable) { }
+};
+
+class CustomMethod: public Method {
+public:
+    ELang::Meta::Block* block;
+
+    CustomMethod(std::string identifier, std::vector<Argument> arguments, ELang::Meta::Block* block):
+        Method(identifier, arguments), block(block) { }
 };
 
 class Context {
 public:
-    std::map<std::string, std::vector<Method>> methods;
+    std::map<std::string, std::vector<std::shared_ptr<Method>>> methods;
     std::map<std::string, Value> variables;
 
     Context(): methods(), variables() { }
-    void register_method(const Method method);
+    void register_method(const std::shared_ptr<Method> method);
     void assign_variable(const std::string name, Value value);
     Value read_variable(const std::string name);
 };

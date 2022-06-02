@@ -85,7 +85,7 @@ public:
 
 class Block: public Expression {
 public:
-    std::vector<Statement *> statements;
+    std::vector<Statement*> statements;
 
     Block() { }
 };
@@ -140,6 +140,15 @@ public:
         identifier_expression(identifier_expression), expression(expression) { }
 };
 
+class TypedIdentifier: public Expression {
+public:
+    const Identifier& type;
+    const Identifier& id;
+
+    TypedIdentifier(const Identifier& type, const Identifier& id):
+        type(type), id(id) { }
+};
+
 class Assignment: public Statement {
 public:
     const Identifier& id;
@@ -178,6 +187,16 @@ public:
 
     WhileLoop(Expression& condition, Block* block):
         condition(condition), block(block) { }
+};
+
+class Function: public Statement {
+public:
+    const Identifier& id;
+    std::vector<TypedIdentifier*> params;
+    Block* block;
+
+    Function(const Identifier& id, std::vector<TypedIdentifier*>& params, Block* block):
+        id(id), params(params), block(block) { }
 };
 
 } // namespace Meta
