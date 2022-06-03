@@ -16,6 +16,7 @@ class Value; // forward declaration
 typedef std::variant<std::monostate, long, double, bool, std::shared_ptr<std::vector<Value>>> Variant;
 
 enum class Type {
+    Void,
     Any,
     Integer,
     Float,
@@ -101,6 +102,9 @@ protected:
     Value eval_expression(const ELang::Meta::Expression& expression, std::shared_ptr<Context> context);
     Value call_function(const ELang::Meta::FunctionCall* expression, std::shared_ptr<Context> context);    
     void print_value(const Value& value) const;
+
+private:
+    Type get_type_from_identifier(const std::string& identifier) const;
 };
 
 } // namespace Runtime

@@ -216,9 +216,13 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, st
 
                 const auto custom = dynamic_pointer_cast<CustomMethod>(*it);
                 if (nullptr != custom) {
-                    // todo: inject params into context before executing block
                     // todo: function needs to return the last evaluated expression
                     auto block_context = make_shared<Context>(context);
+
+                    for (auto i = 0; i < ptr->arguments.size(); i++) {
+                        block_context->assign_variable(ptr->arguments[i].name, expression_values[i]);
+                    }
+
                     run(custom->block, block_context);
                     return Value();
                 }
@@ -298,6 +302,13 @@ void Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
         if (nullptr != func_decl) {
             // todo: we need some kind of validation here
             auto args = std::vector<Argument>();
+            for (auto it = func_decl->params.cbegin(); it != func_decl->params.cend(); ++it) {
+                auto param = *it;
+
+                auto type = get_type_from_identifier(param->type.name);
+                args.push_back(Argument(param->id.name, type));
+            }
+
             context->register_method(shared_ptr<Method>(new CustomMethod(func_decl->id.name, args, func_decl->block)));
         }
         
@@ -314,6 +325,25 @@ void Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
             print_value(res);
             continue;
         }
+    }
+}
+
+Type Interpreter::get_type_from_identifier(const std::string& identifier) const {
+    if (identifier == "Integer") {
+        return Type::Integer;
+    }
+    else if (identifier == "Float") {
+        return Type::Float;
+    }
+    else if (identifier == "Boolean") {
+        return Type::Boolean;
+    }
+    else if (identifier == "Vector") {
+        return Type::Vector;
+    }
+    else {
+        cerr << "Invalid type: `" << identifier << "`" << endl;
+        throw -1;
     }
 }
 

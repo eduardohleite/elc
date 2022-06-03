@@ -28,7 +28,7 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 %type <identifier> identifier
 %type <expression> number boolean expression
 %type <expressions> arguments
-%type <typed_identifier> param
+%type <typed_identifier> typed
 %type <typed_identifiers> params
 %type <block> program statements
 %type <statement> statement if_stmt loop func
@@ -49,7 +49,8 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 program    : statements { main_block = $1; }
            ;
 
-statements : statement { $$ = new ELang::Meta::Block(); $$->statements.push_back($<statement>1); }
+statements : { $$ = new ELang::Meta::Block(); }
+           | statement { $$ = new ELang::Meta::Block(); $$->statements.push_back($<statement>1); }
            | statements statement { $1->statements.push_back($<statement>2); }
            ;
 
@@ -103,11 +104,11 @@ arguments  : { $$ = new std::vector<ELang::Meta::Expression*>(); }
            ;
 
 params     : { $$ = new std::vector<ELang::Meta::TypedIdentifier*>(); }
-           | param { $$ = new std::vector<ELang::Meta::TypedIdentifier*>(); $$->push_back($1); }
-           | params TCOMMA param { $1->push_back($3); }
+           | typed { $$ = new std::vector<ELang::Meta::TypedIdentifier*>(); $$->push_back($1); }
+           | params TCOMMA typed { $1->push_back($3); }
            ;
 
-param      : TIDENTIFIER TDOUBLECOLON TIDENTIFIER { $$ = new ELang::Meta::TypedIdentifier(*$1, *$3); }
+typed      : identifier TDOUBLECOLON identifier { $$ = new ELang::Meta::TypedIdentifier(*$3, *$1); }
            ;
 
 arithmetic : TPLUS
