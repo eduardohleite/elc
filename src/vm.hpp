@@ -86,7 +86,7 @@ public:
     Context(std::shared_ptr<Context> parent) : parent(parent), methods(), variables() { }
 
     void register_method(const std::shared_ptr<Method> method);
-    void assign_variable(const std::string name, Value value);
+    void assign_variable(const std::string name, Value value, bool force_local = false);
     Value read_variable(const std::string name);
     void locate_methods(std::vector<std::shared_ptr<ELang::Runtime::Method>>& results, const std::string& name) const;
 };

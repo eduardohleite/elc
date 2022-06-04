@@ -220,7 +220,7 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, st
                     auto block_context = make_shared<Context>(context);
 
                     for (auto i = 0; i < ptr->arguments.size(); i++) {
-                        block_context->assign_variable(ptr->arguments[i].name, expression_values[i]);
+                        block_context->assign_variable(ptr->arguments[i].name, expression_values[i], true);
                     }
                     
                     return run(custom->block, block_context);
@@ -496,10 +496,15 @@ void Context::register_method(const std::shared_ptr<Method> method) {
     methods[method->identifier].push_back(method);
 }
 
-void Context::assign_variable(const string name, Value value) {
+void Context::assign_variable(const string name, Value value, bool force_local) {
     // TODO: context disambiguation. i.e. local/global keywords
     auto search_context = this;
     auto variable_exists = false;
+
+    if (force_local) {
+        variables[name] = value;
+        return;
+    }
 
     while (nullptr != search_context && !variable_exists) {
         auto it = search_context->variables.find(name);
