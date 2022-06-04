@@ -6,4 +6,4 @@ function fib(n::Integer)
   end
 end
 
-show(fib(20))
+show(fib(10))
