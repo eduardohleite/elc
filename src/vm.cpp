@@ -6,7 +6,7 @@ using namespace ELang::Runtime;
 using namespace ELang::Meta;
 using namespace std;
 
-Value Interpreter::eval_expression(const Expression& expression, std::shared_ptr<Context> context) {
+Value Interpreter::eval_expression(const Expression& expression, const std::shared_ptr<Context>& context) {
     // check for expression types
     const auto expr_ptr = &expression;
 
@@ -31,7 +31,7 @@ Value Interpreter::eval_expression(const Expression& expression, std::shared_ptr
     // vector expression
     const auto vector_expr = dynamic_cast<const VectorExpression*>(expr_ptr);
     if (nullptr != vector_expr) {
-        auto vec = make_shared<vector<Value>>();
+        const auto vec = make_shared<vector<Value>>();
         for (auto it = vector_expr->arguments.cbegin(); it != vector_expr->arguments.cend(); ++it) {
             vec->push_back(eval_expression(**it, context));
         }
@@ -42,10 +42,10 @@ Value Interpreter::eval_expression(const Expression& expression, std::shared_ptr
     // negated binary expression
     const auto negated_binary_expr = dynamic_cast<const NegatedBinaryExpression*>(expr_ptr);
     if (nullptr != negated_binary_expr) {
-        auto identifier = Identifier("__not__");
-        auto args = vector<Expression*>({&negated_binary_expr->expr});
+        const auto identifier = Identifier("__not__");
+        const auto args = vector<Expression*>({&negated_binary_expr->expr});
 
-        auto function_call = FunctionCall(identifier, args);
+        const auto function_call = FunctionCall(identifier, args);
         return call_function(&function_call, context);
     }
 
@@ -53,7 +53,7 @@ Value Interpreter::eval_expression(const Expression& expression, std::shared_ptr
     const auto binary_expr = dynamic_cast<const BinaryExpression*>(expr_ptr);
     if (nullptr != binary_expr) {
         auto identifier = Identifier();
-        auto args = vector<Expression*>({&binary_expr->lhs, &binary_expr->rhs});
+        const auto args = vector<Expression*>({&binary_expr->lhs, &binary_expr->rhs});
 
         switch (binary_expr->op) {
             case TAND:
@@ -67,7 +67,7 @@ Value Interpreter::eval_expression(const Expression& expression, std::shared_ptr
                 throw -1; 
         }
 
-        auto function_call = FunctionCall(identifier, args);
+        const auto function_call = FunctionCall(identifier, args);
         return call_function(&function_call, context);
     }
 
@@ -75,7 +75,7 @@ Value Interpreter::eval_expression(const Expression& expression, std::shared_ptr
     const auto arithmetic_expr = dynamic_cast<const ArithmeticExpression*>(expr_ptr);
     if (nullptr != arithmetic_expr) {
         auto identifier = Identifier();
-        auto args = vector<Expression*>({&arithmetic_expr->lhs, &arithmetic_expr->rhs});
+        const auto args = vector<Expression*>({&arithmetic_expr->lhs, &arithmetic_expr->rhs});
 
         switch (arithmetic_expr->op) {
             case TPLUS:
@@ -95,7 +95,7 @@ Value Interpreter::eval_expression(const Expression& expression, std::shared_ptr
                 throw -1; 
         }
 
-        auto function_call = FunctionCall(identifier, args);
+        const auto function_call = FunctionCall(identifier, args);
         return call_function(&function_call, context);
     }
 
@@ -103,7 +103,7 @@ Value Interpreter::eval_expression(const Expression& expression, std::shared_ptr
     const auto comparison_expr = dynamic_cast<const ComparisonExpression*>(expr_ptr);
     if (nullptr != comparison_expr) {
         auto identifier = Identifier();
-        auto args = vector<Expression*>({&comparison_expr->lhs, &comparison_expr->rhs});
+        const auto args = vector<Expression*>({&comparison_expr->lhs, &comparison_expr->rhs});
 
         switch (comparison_expr->op) {
             case TEQ:
@@ -129,31 +129,31 @@ Value Interpreter::eval_expression(const Expression& expression, std::shared_ptr
                 throw -1; 
         }
 
-        auto function_call = FunctionCall(identifier, args);
+        const auto function_call = FunctionCall(identifier, args);
         return call_function(&function_call, context);
     }
 
     // range
     const auto range_expr = dynamic_cast<const RangeExpression*>(expr_ptr);
     if (nullptr != range_expr) {
-        auto args = vector<Expression*>({&range_expr->start, &range_expr->end});
-        auto function_call = FunctionCall(Identifier("range"), args);
+        const auto args = vector<Expression*>({&range_expr->start, &range_expr->end});
+        const auto function_call = FunctionCall(Identifier("range"), args);
         return call_function(&function_call, context);
     }
 
     // search
     const auto search_expr = dynamic_cast<const SearchExpression*>(expr_ptr);
     if (nullptr != search_expr) {
-        auto args = vector<Expression*>({&search_expr->collection, &search_expr->element});
-        auto function_call = FunctionCall(Identifier("__in__"), args);
+        const auto args = vector<Expression*>({&search_expr->collection, &search_expr->element});
+        const auto function_call = FunctionCall(Identifier("__in__"), args);
         return call_function(&function_call, context);
     }
 
     // index
     const auto index_expr = dynamic_cast<const IndexExpression*>(expr_ptr);
     if (nullptr != index_expr) {
-        auto args = vector<Expression*>({&index_expr->identifier_expression, &index_expr->expression});
-        auto function_call = FunctionCall(Identifier("__at__"), args);
+        const auto args = vector<Expression*>({&index_expr->identifier_expression, &index_expr->expression});
+        const auto function_call = FunctionCall(Identifier("__at__"), args);
         return call_function(&function_call, context);
     }
 
@@ -171,7 +171,7 @@ Value Interpreter::eval_expression(const Expression& expression, std::shared_ptr
 }
 
 void Context::locate_methods(std::vector<std::shared_ptr<ELang::Runtime::Method>>& results, const std::string& name) const {
-    auto fun = methods.find(name);
+    const auto fun = methods.find(name);
 
     if (fun != methods.end()) {
         auto found = fun->second;
@@ -183,7 +183,7 @@ void Context::locate_methods(std::vector<std::shared_ptr<ELang::Runtime::Method>
     }
 }
 
-Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, std::shared_ptr<Context> context) {
+Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, const std::shared_ptr<Context>& context) {
     auto methods = std::vector<std::shared_ptr<ELang::Runtime::Method>>();
     context->locate_methods(methods, expression->id.name);
 
@@ -199,7 +199,7 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, st
     }
 
     for (auto it = methods.cbegin(); it != methods.cend(); ++it) {       
-        auto ptr = *it;
+        const auto ptr = *it;
 
         if (ptr->arguments.size() == expression_values.size()) {
             auto match = true;
@@ -217,7 +217,7 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, st
                 const auto custom = dynamic_pointer_cast<CustomMethod>(*it);
                 if (nullptr != custom) {
                     // todo: function needs to return the last evaluated expression
-                    auto block_context = make_shared<Context>(context);
+                    const auto block_context = make_shared<Context>(context);
 
                     for (auto i = 0; i < ptr->arguments.size(); ++i) {
                         block_context->assign_variable(ptr->arguments[i].name, expression_values[i], true);
@@ -233,7 +233,7 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, st
     throw -1;
 }
 
-Value Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
+Value Interpreter::run(const Block* program, const std::shared_ptr<Context>& context) {
     auto last_evaluated_value = Value();
 
     for (auto it = program->statements.cbegin(); it != program->statements.cend(); ++it) {
@@ -243,7 +243,7 @@ Value Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
 
         const auto if_statement = dynamic_cast<IfStatement*>(statement);
         if (nullptr != if_statement) {
-            auto condition = eval_expression(if_statement->condition, context);
+            const auto condition = eval_expression(if_statement->condition, context);
             if (condition.type != Type::Boolean) {
                 cerr << "Invalid type for conditional statement." << endl;
                 throw -1;
@@ -288,13 +288,13 @@ Value Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
 
         const auto for_loop = dynamic_cast<ForLoop*>(statement);
         if (nullptr != for_loop) {
-            auto iterator = eval_expression(for_loop->iterator, context);
+            const auto iterator = eval_expression(for_loop->iterator, context);
             if (iterator.type != Type::Vector) {
                 cerr << "Invalid iterator." << endl;
                 throw -1;
             }
 
-            auto iterator_value = std::get<shared_ptr<vector<Value>>>(iterator.value);
+            const auto iterator_value = std::get<shared_ptr<vector<Value>>>(iterator.value);
             for (auto it = iterator_value->cbegin(); it != iterator_value->cend(); ++it) {
                 context->assign_variable(for_loop->id.name, *it);
                 last_evaluated_value = run(for_loop->block, context);
@@ -307,7 +307,7 @@ Value Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
             // todo: we need some kind of validation here
             auto args = std::vector<Argument>();
             for (auto it = func_decl->params.cbegin(); it != func_decl->params.cend(); ++it) {
-                auto param = *it;
+                const auto param = *it;
 
                 auto type = get_type_from_identifier(param->type.name);
                 args.push_back(Argument(param->id.name, type));
@@ -321,7 +321,7 @@ Value Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
         
         const auto assignment = dynamic_cast<Assignment*>(statement);
         if (nullptr != assignment) {
-            auto value = eval_expression(assignment->expression, context);
+            const auto value = eval_expression(assignment->expression, context);
             context->assign_variable(assignment->id.name, value);
 
             last_evaluated_value = Value();
@@ -450,8 +450,8 @@ Interpreter::Interpreter() {
     global_context = std::make_shared<Context>();
 }
 
-void Context::register_method(const std::shared_ptr<Method> method) {
-    auto it = methods.find(method->identifier);
+void Context::register_method(const std::shared_ptr<Method>& method) {
+    const auto it = methods.find(method->identifier);
     if (it == methods.end()) {
         methods[method->identifier] = vector<std::shared_ptr<Method>>();
     }
@@ -460,7 +460,7 @@ void Context::register_method(const std::shared_ptr<Method> method) {
     methods[method->identifier].push_back(method);
 }
 
-void Context::assign_variable(const string name, Value value, bool force_local) {
+void Context::assign_variable(const string& name, const Value& value, bool force_local) {
     // TODO: context disambiguation. i.e. local/global keywords
     auto search_context = this;
     auto variable_exists = false;
@@ -471,7 +471,7 @@ void Context::assign_variable(const string name, Value value, bool force_local) 
     }
 
     while (nullptr != search_context && !variable_exists) {
-        auto it = search_context->variables.find(name);
+        const auto it = search_context->variables.find(name);
         if (it == search_context->variables.end()) {
             search_context = search_context->parent.get();
         }
@@ -486,8 +486,8 @@ void Context::assign_variable(const string name, Value value, bool force_local) 
     }
 }
 
-Value Context::read_variable(const string name) {
-    auto it = variables.find(name);
+Value Context::read_variable(const string& name) {
+    const auto it = variables.find(name);
     if (it == variables.end()) {
         if (nullptr != parent) {
             return parent->read_variable(name);

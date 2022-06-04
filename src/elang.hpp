@@ -21,30 +21,30 @@ class Integer: public Expression {
 public:
     long value;
 
-    Integer(long value): value(value) { }
+    Integer(const long value): value(value) { }
 };
 
 class Float: public Expression {
 public:
     double value;
 
-    Float(double value): value(value) { }
+    Float(const double value): value(value) { }
 };
 
 class Boolean: public Expression {
 public:
     bool value;
 
-    Boolean(bool value): value(value) { }
+    Boolean(const bool value): value(value) { }
 };
 
 class ArithmeticExpression: public Expression {
 public:
-    int op;
+    const int op;
     Expression& lhs;
     Expression& rhs;
 
-    ArithmeticExpression(Expression& lhs, int op, Expression& rhs):
+    ArithmeticExpression(Expression& lhs, const int op, Expression& rhs):
         lhs(lhs), op(op), rhs(rhs) { }
 };
 
@@ -57,21 +57,21 @@ public:
 
 class BinaryExpression: public Expression {
 public:
-    int op;
+    const int op;
     Expression& lhs;
     Expression& rhs;
 
-    BinaryExpression(Expression& lhs, int op, Expression& rhs):
+    BinaryExpression(Expression& lhs, const int op, Expression& rhs):
         lhs(lhs), op(op), rhs(rhs) { }
 };
 
 class ComparisonExpression: public Expression {
 public:
-    int op;
+    const int op;
     Expression& lhs;
     Expression& rhs;
 
-    ComparisonExpression(Expression& lhs, int op, Expression& rhs):
+    ComparisonExpression(Expression& lhs, const int op, Expression& rhs):
         lhs(lhs), op(op), rhs(rhs) { }
 };
 
@@ -103,7 +103,7 @@ public:
     const Identifier& id;
     std::vector<Expression*> arguments;
 
-    FunctionCall(const Identifier& id, std::vector<Expression*>& arguments):
+    FunctionCall(const Identifier& id, const std::vector<Expression*>& arguments):
         id(id), arguments(arguments) { }
     FunctionCall(const Identifier& id): id(id) { }
 };
