@@ -379,6 +379,8 @@ void Interpreter::register_builtins() {
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__add__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_add)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__add__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_add)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__add__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_add)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__add__", { Argument("lhs", Type::String), Argument("rhs", Type::String) }, builtin_add)));
+
 
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__sub__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_sub)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__sub__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_sub)));
@@ -447,6 +449,8 @@ void Interpreter::register_builtins() {
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("pop!", { Argument("vec", Type::Vector) }, builtin_pop_bang)));
 
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__at__", { Argument("vec", Type::Vector), Argument("index", Type::Integer) }, builtin_at)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__at__", { Argument("str", Type::String), Argument("index", Type::Integer) }, builtin_at)));
+
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__in__", { Argument("vec", Type::Vector), Argument("value", Type::Any) }, builtin_in)));
 
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("show", { Argument("value", Type::Any) }, builtin_show)));

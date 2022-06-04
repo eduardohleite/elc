@@ -6,13 +6,13 @@
 
 using namespace ELang::Runtime;
 
-Value ELang::Runtime::builtin_add(std::vector<Value> params) {
+Value ELang::Runtime::builtin_add(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid operand count
     }
 
-    auto lhs = params.at(0);
-    auto rhs = params.at(1);
+    const auto lhs = params.at(0);
+    const auto rhs = params.at(1);
 
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) + std::get<long>(rhs.value));
@@ -26,18 +26,22 @@ Value ELang::Runtime::builtin_add(std::vector<Value> params) {
     else if (lhs.type == Type::Float && rhs.type == Type::Float) {
         return Value(std::get<double>(lhs.value) + std::get<double>(rhs.value));
     }
+    else if (lhs.type == Type::String && rhs.type == Type::String) {
+        return Value(std::make_shared<std::string>(*std::get<std::shared_ptr<std::string>>(lhs.value)
+             + *std::get<std::shared_ptr<std::string>>(rhs.value)));
+    }
     else {
         // TODO: error - invalid operand types
     }
 }
 
-Value ELang::Runtime::builtin_sub(std::vector<Value> params) {
+Value ELang::Runtime::builtin_sub(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid operand count
     }
 
-    auto lhs = params.at(0);
-    auto rhs = params.at(1);
+    const auto lhs = params.at(0);
+    const auto rhs = params.at(1);
 
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) - std::get<long>(rhs.value));
@@ -56,13 +60,13 @@ Value ELang::Runtime::builtin_sub(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_mul(std::vector<Value> params) {
+Value ELang::Runtime::builtin_mul(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid operand count
     }
 
-    auto lhs = params.at(0);
-    auto rhs = params.at(1);
+    const auto lhs = params.at(0);
+    const auto rhs = params.at(1);
 
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) * std::get<long>(rhs.value));
@@ -81,13 +85,13 @@ Value ELang::Runtime::builtin_mul(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_div(std::vector<Value> params) {
+Value ELang::Runtime::builtin_div(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid operand count
     }
 
-    auto lhs = params.at(0);
-    auto rhs = params.at(1);
+    const auto lhs = params.at(0);
+    const auto rhs = params.at(1);
 
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) / std::get<long>(rhs.value));
@@ -106,12 +110,12 @@ Value ELang::Runtime::builtin_div(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_not(std::vector<Value> params) {
+Value ELang::Runtime::builtin_not(const std::vector<Value>& params) {
     if (params.size() != 1) {
         // TODO: invalid operand count
     }
 
-    auto expr = params.at(0);
+    const auto expr = params.at(0);
 
     if (expr.type == Type::Boolean) {
         return Value(!std::get<bool>(expr.value));
@@ -121,13 +125,13 @@ Value ELang::Runtime::builtin_not(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_and(std::vector<Value> params) {
+Value ELang::Runtime::builtin_and(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid operand count
     }
 
-    auto lhs = params.at(0);
-    auto rhs = params.at(1);
+    const auto lhs = params.at(0);
+    const auto rhs = params.at(1);
 
     if (lhs.type == Type::Boolean && rhs.type == Type::Boolean) {
         return Value(std::get<bool>(lhs.value) && std::get<bool>(rhs.value));
@@ -137,13 +141,13 @@ Value ELang::Runtime::builtin_and(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_or(std::vector<Value> params) {
+Value ELang::Runtime::builtin_or(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid operand count
     }
 
-    auto lhs = params.at(0);
-    auto rhs = params.at(1);
+    const auto lhs = params.at(0);
+    const auto rhs = params.at(1);
 
     if (lhs.type == Type::Boolean && rhs.type == Type::Boolean) {
         return Value(std::get<bool>(lhs.value) || std::get<bool>(rhs.value));
@@ -153,13 +157,13 @@ Value ELang::Runtime::builtin_or(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_eq(std::vector<Value> params) {
+Value ELang::Runtime::builtin_eq(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid operand count
     }
 
-    auto lhs = params.at(0);
-    auto rhs = params.at(1);
+    const auto lhs = params.at(0);
+    const auto rhs = params.at(1);
 
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) == std::get<long>(rhs.value));
@@ -181,13 +185,13 @@ Value ELang::Runtime::builtin_eq(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_ne(std::vector<Value> params) {
+Value ELang::Runtime::builtin_ne(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid operand count
     }
 
-    auto lhs = params.at(0);
-    auto rhs = params.at(1);
+    const auto lhs = params.at(0);
+    const auto rhs = params.at(1);
 
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) != std::get<long>(rhs.value));
@@ -209,13 +213,13 @@ Value ELang::Runtime::builtin_ne(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_gte(std::vector<Value> params) {
+Value ELang::Runtime::builtin_gte(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid operand count
     }
 
-    auto lhs = params.at(0);
-    auto rhs = params.at(1);
+    const auto lhs = params.at(0);
+    const auto rhs = params.at(1);
 
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) >= std::get<long>(rhs.value));
@@ -237,13 +241,13 @@ Value ELang::Runtime::builtin_gte(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_gt(std::vector<Value> params) {
+Value ELang::Runtime::builtin_gt(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid operand count
     }
 
-    auto lhs = params.at(0);
-    auto rhs = params.at(1);
+    const auto lhs = params.at(0);
+    const auto rhs = params.at(1);
 
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) > std::get<long>(rhs.value));
@@ -265,13 +269,13 @@ Value ELang::Runtime::builtin_gt(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_lte(std::vector<Value> params) {
+Value ELang::Runtime::builtin_lte(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid operand count
     }
 
-    auto lhs = params.at(0);
-    auto rhs = params.at(1);
+    const auto lhs = params.at(0);
+    const auto rhs = params.at(1);
 
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) <= std::get<long>(rhs.value));
@@ -293,13 +297,13 @@ Value ELang::Runtime::builtin_lte(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_lt(std::vector<Value> params) {
+Value ELang::Runtime::builtin_lt(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid operand count
     }
 
-    auto lhs = params.at(0);
-    auto rhs = params.at(1);
+    const auto lhs = params.at(0);
+    const auto rhs = params.at(1);
 
     if (lhs.type == Type::Integer && rhs.type == Type::Integer) {
         return Value(std::get<long>(lhs.value) < std::get<long>(rhs.value));
@@ -321,15 +325,15 @@ Value ELang::Runtime::builtin_lt(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_zeros(std::vector<Value> params) {
+Value ELang::Runtime::builtin_zeros(const std::vector<Value>& params) {
     if (params.size() != 1) {
         // TODO: invalid parameter count
     }
 
-    auto n = params.at(0);
+    const auto n = params.at(0);
     if (n.type == Type::Integer) {
-        auto vec = std::make_shared<std::vector<Value>>();
-        auto nval = std::get<long>(n.value);
+        const auto vec = std::make_shared<std::vector<Value>>();
+        const auto nval = std::get<long>(n.value);
 
         for (long i = 0; i < nval; ++i) {
             vec->push_back(Value(0l));
@@ -342,15 +346,15 @@ Value ELang::Runtime::builtin_zeros(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_ones(std::vector<Value> params) {
+Value ELang::Runtime::builtin_ones(const std::vector<Value>& params) {
     if (params.size() != 1) {
         // TODO: invalid parameter count
     }
 
     auto n = params.at(0);
     if (n.type == Type::Integer) {
-        auto vec = std::make_shared<std::vector<Value>>();
-        auto nval = std::get<long>(n.value);
+        const auto vec = std::make_shared<std::vector<Value>>();
+        const auto nval = std::get<long>(n.value);
 
         for (long i = 0; i < nval; ++i) {
             vec->push_back(Value(1l));
@@ -363,15 +367,15 @@ Value ELang::Runtime::builtin_ones(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_length(std::vector<Value> params) {
+Value ELang::Runtime::builtin_length(const std::vector<Value>& params) {
     if (params.size() != 1) {
         // TODO: invalid parameter count
     }
 
-    auto vec = params.at(0);
+    const auto vec = params.at(0);
 
     if (vec.type == Type::Vector) {
-        auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
+        const auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
         return Value(static_cast<long>(vecval->size()));
     }
     else {
@@ -379,7 +383,7 @@ Value ELang::Runtime::builtin_length(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_range(std::vector<Value> params) {
+Value ELang::Runtime::builtin_range(const std::vector<Value>& params) {
     auto has_min = false;
     Value min, max;
 
@@ -397,9 +401,9 @@ Value ELang::Runtime::builtin_range(std::vector<Value> params) {
     }
 
     if (max.type == Type::Integer && (! has_min || (has_min && min.type == Type::Integer))) {
-        auto vec = std::make_shared<std::vector<Value>>();
-        auto minval = has_min ? std::get<long>(min.value) - 1 : 0;
-        auto maxval = std::get<long>(max.value);
+        const auto vec = std::make_shared<std::vector<Value>>();
+        const auto minval = has_min ? std::get<long>(min.value) - 1 : 0;
+        const auto maxval = std::get<long>(max.value);
 
         for (long i = minval; i < maxval; ++i) {
             vec->push_back(Value(i+1));
@@ -414,16 +418,16 @@ Value ELang::Runtime::builtin_range(std::vector<Value> params) {
 
 
 
-Value ELang::Runtime::builtin_push_bang(std::vector<Value> params) {
+Value ELang::Runtime::builtin_push_bang(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid parameter count
     }
 
-    auto vec = params.at(0);
-    auto val = params.at(1);
+    const auto vec = params.at(0);
+    const auto val = params.at(1);
 
     if (vec.type == Type::Vector) {
-        auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
+        const auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
         
         switch(val.type) {
             case Type::Integer:
@@ -450,19 +454,19 @@ Value ELang::Runtime::builtin_push_bang(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_pop_bang(std::vector<Value> params) {
+Value ELang::Runtime::builtin_pop_bang(const std::vector<Value>& params) {
     if (params.size() != 1) {
         // TODO: invalid parameter count
     }
 
-    auto vec = params.at(0);
+    const auto vec = params.at(0);
 
     if (vec.type == Type::Vector) {
-        auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
-        auto last_index = vecval->size();
+        const auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
+        const auto last_index = vecval->size();
 
         if (last_index > 0) {
-            auto grab = vecval->at(last_index - 1);
+            const auto grab = vecval->at(last_index - 1);
             vecval->pop_back();
             return Value(grab);
         }
@@ -475,27 +479,34 @@ Value ELang::Runtime::builtin_pop_bang(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_at(std::vector<Value> params) {
+Value ELang::Runtime::builtin_at(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid parameter count
     }
 
-    auto vec = params.at(0);
-    auto index = params.at(1);
+    const auto vec = params.at(0);
+    const auto index = params.at(1);
 
     if (vec.type == Type::Vector && index.type == Type::Integer) {
-        auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
-        auto indexval = std::get<long>(index.value);
+        const auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
+        const auto indexval = std::get<long>(index.value);
 
         //TODO: out of bounds
         return Value(vecval->at(indexval-1)); /* 1-based array */
+    }
+    else if (vec.type == Type::String && index.type == Type::Integer) {
+        const auto strval = std::get<std::shared_ptr<std::string>>(vec.value);
+        const auto indexval = std::get<long>(index.value);
+
+        // TODO: out of bounds
+        return Value(std::make_shared<std::string>(1, strval->at(indexval-1)));
     }
     else {
         // TODO: error - invalid parameter types
     }
 }
 
-Value ELang::Runtime::builtin_in(std::vector<Value> params) {
+Value ELang::Runtime::builtin_in(const std::vector<Value>& params) {
     if (params.size() != 2) {
         // TODO: invalid parameter count
     }
@@ -504,7 +515,7 @@ Value ELang::Runtime::builtin_in(std::vector<Value> params) {
     const auto val = params.at(1);
 
     if (vec.type == Type::Vector) {
-        auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
+        const auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
 
         return Value(std::find_if(vecval->begin(), vecval->end(),
             [val](const ELang::Runtime::Value v) { return  v.type == val.type && v.value == val.value; }) != vecval->end());
@@ -514,7 +525,7 @@ Value ELang::Runtime::builtin_in(std::vector<Value> params) {
     }
 }
 
-Value ELang::Runtime::builtin_show(std::vector<Value> params) {
+Value ELang::Runtime::builtin_show(const std::vector<Value>& params) {
     if (params.size() != 1) {
         // TODO: invalid parameter count
     }
@@ -535,11 +546,11 @@ Value ELang::Runtime::builtin_show(std::vector<Value> params) {
             std::cout << "'" << *std::get<std::shared_ptr<std::string>>(val.value) << "' (type: String)";
             break;
         case Type::Vector:
-            auto vec = std::get<std::shared_ptr<std::vector<Value>>>(val.value);
+            const auto vec = std::get<std::shared_ptr<std::vector<Value>>>(val.value);
             std::cout << "Vector with " << vec->size() << " elements:" << std::endl;
             for (std::size_t i = 0; i< vec->size(); ++i) {
                 std::cout << i << ": ";
-                auto el = vec->at(i);
+                const auto el = vec->at(i);
 
                 switch (el.type) {
                     case Type::Integer:
