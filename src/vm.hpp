@@ -14,7 +14,12 @@ namespace Runtime {
 
 class Value; // forward declaration
 
-typedef std::variant<std::monostate, long, double, bool, std::shared_ptr<std::vector<Value>>> Variant;
+typedef std::variant<std::monostate,
+                     long,
+                     double,
+                     bool,
+                     std::shared_ptr<std::vector<Value>>,
+                     std::shared_ptr<std::string>> Variant;
 
 enum class Type {
     Void,
@@ -22,7 +27,8 @@ enum class Type {
     Integer,
     Float,
     Boolean,
-    Vector
+    Vector,
+    String,
 };
 
 
@@ -32,6 +38,7 @@ public:
     Value(const double value): value(value), type(Type::Float) { }
     Value(const bool value): value(value), type(Type::Boolean) { }
     Value(const std::shared_ptr<std::vector<Value>>& value): value(value), type(Type::Vector) { }
+    Value(const std::shared_ptr<std::string>& value): value(value), type(Type::String) { }
 
     Value(): type(Type::Void) { }
 

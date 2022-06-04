@@ -20,13 +20,12 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
     int token;
 }
 
-%token <string> TIDENTIFIER TINTEGER TFLOAT
+%token <string> TIDENTIFIER TINTEGER TFLOAT TTRUE TFALSE TSTRING
 %token <string> TIF TELSE TFOR TWHILE TFUNCTION TEND
-%token <string> TTRUE TFALSE
 %token <token> TLPAREN TRPAREN TLBRACKET TRBRACKET TCOMMA TASSIGN TCOLON TDOUBLECOLON TIN
 
 %type <identifier> identifier
-%type <expression> number boolean expression
+%type <expression> number boolean string expression
 %type <expressions> arguments
 %type <typed_identifier> typed
 %type <typed_identifiers> params
@@ -83,9 +82,12 @@ boolean    : TTRUE { $$ = new ELang::Meta::Boolean(true); delete $1; }
            | TFALSE { $$ = new ELang::Meta::Boolean(false); delete $1; }
            ;
 
+string     : TSTRING { $$ = new ELang::Meta::String(*$1); delete $1; }
+
 expression : identifier TLPAREN arguments TRPAREN { $$ = new ELang::Meta::FunctionCall(*$1, *$3); delete $3; }
            | number
            | boolean
+           | string
            | identifier
            | identifier TLBRACKET expression TRBRACKET { $$ = new ELang::Meta::IndexExpression(*$1, *$3); }
            | expression arithmetic expression { $$ = new ELang::Meta::ArithmeticExpression(*$1, $2, *$3); }

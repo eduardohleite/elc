@@ -13,19 +13,25 @@ Value Interpreter::eval_expression(const Expression& expression, const std::shar
     // int constant
     const auto int_expr = dynamic_cast<const Integer*>(expr_ptr);
     if (nullptr != int_expr) {
-        return int_expr->value;
+        return Value(int_expr->value);
     }
 
     // float constant
     const auto float_expr = dynamic_cast<const Float*>(expr_ptr);
     if (nullptr != float_expr) {
-        return float_expr->value;
+        return Value(float_expr->value);
     }
 
     // boolean constant
     const auto bool_expr = dynamic_cast<const Boolean*>(expr_ptr);
     if (nullptr != bool_expr) {
-        return bool_expr->value;
+        return Value(bool_expr->value);
+    }
+
+    // string constant
+    const auto string_expr = dynamic_cast<const String*>(expr_ptr);
+    if (nullptr != string_expr) {
+        return Value(std::make_shared<std::string>(string_expr->value));
     }
 
     // vector expression

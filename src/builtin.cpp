@@ -531,6 +531,9 @@ Value ELang::Runtime::builtin_show(std::vector<Value> params) {
         case Type::Boolean:
             std::cout << (std::get<bool>(val.value) ? "true" : "false") << " (type: Boolean)";
             break;
+        case Type::String:
+            std::cout << "'" << *std::get<std::shared_ptr<std::string>>(val.value) << "' (type: String)";
+            break;
         case Type::Vector:
             auto vec = std::get<std::shared_ptr<std::vector<Value>>>(val.value);
             std::cout << "Vector with " << vec->size() << " elements:" << std::endl;
