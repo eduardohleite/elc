@@ -180,6 +180,9 @@ Value ELang::Runtime::builtin_eq(const std::vector<Value>& params) {
     else if (lhs.type == Type::Boolean && rhs.type == Type::Boolean) {
         return Value(std::get<bool>(lhs.value) == std::get<bool>(rhs.value));
     }
+    else if (lhs.type == Type::String && rhs.type == Type::String) {
+        return Value(*std::get<std::shared_ptr<std::string>>(lhs.value) == *std::get<std::shared_ptr<std::string>>(rhs.value));
+    }
     else {
         // TODO: error - invalid operand types
     }
@@ -207,6 +210,9 @@ Value ELang::Runtime::builtin_ne(const std::vector<Value>& params) {
     }
     else if (lhs.type == Type::Boolean && rhs.type == Type::Boolean) {
         return Value(std::get<bool>(lhs.value) != std::get<bool>(rhs.value));
+    }
+    else if (lhs.type == Type::String && rhs.type == Type::String) {
+        return Value(*std::get<std::shared_ptr<std::string>>(lhs.value) != *std::get<std::shared_ptr<std::string>>(rhs.value));
     }
     else {
         // TODO: error - invalid operand types

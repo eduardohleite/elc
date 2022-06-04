@@ -406,12 +406,15 @@ void Interpreter::register_builtins() {
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_eq)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_eq)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_eq)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::String), Argument("rhs", Type::String) }, builtin_eq)));
 
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_ne)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_ne)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_ne)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_ne)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_ne)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::String), Argument("rhs", Type::String) }, builtin_ne)));
+
 
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__gte__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_gte)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__gte__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_gte)));
