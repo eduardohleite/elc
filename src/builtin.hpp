@@ -40,5 +40,8 @@ Value builtin_in(const std::vector<Value>& params);
 // pretty print
 Value builtin_show(const std::vector<Value>& params);
 
+// strings
+Value builtin_substr(const std::vector<Value>& params);
+
 } // namespace Runtime
 } // namespace ELang

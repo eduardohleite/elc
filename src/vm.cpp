@@ -457,6 +457,9 @@ void Interpreter::register_builtins() {
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::String), Argument("rhs", Type::String) }, builtin_ne)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__at__", { Argument("str", Type::String), Argument("index", Type::Integer) }, builtin_at)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("length", { Argument("vec", Type::String) }, builtin_length)));
+
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("substr", { Argument("str", Type::String), Argument("length", Type::Integer) }, builtin_substr)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("substr", { Argument("str", Type::String), Argument("start", Type::Integer), Argument("length", Type::Integer) }, builtin_substr)));
 }
 
 Interpreter::Interpreter() {

@@ -585,3 +585,33 @@ Value ELang::Runtime::builtin_show(const std::vector<Value>& params) {
     std::cout << std::endl;
     return Value();
 }
+
+Value ELang::Runtime::builtin_substr(const std::vector<Value>& params) {
+    auto has_start = false;
+    Value start, len;
+
+    if (params.size() == 2) {
+        len = params.at(1);
+    }
+    else if (params.size() == 3) {
+        has_start = true;
+
+        start = params.at(1);
+        len = params.at(2);
+    }
+    else {
+        // TODO: invalid parameter count
+    }
+
+    const auto str = params.at(0);
+
+    if (str.type == Type::String && len.type == Type::Integer && (!has_start || start.type == Type::Integer)) {
+        const auto full_str = std::get<std::shared_ptr<std::string>>(str.value);
+        const auto start_val = has_start ? std::get<long>(start.value) - 1 : 0;
+
+        return std::make_shared<std::string>(full_str->substr(start_val, std::get<long>(len.value)));
+    }
+    else {
+        // TODO: error - invalid parameter types
+    }
+}
