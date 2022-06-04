@@ -6,4 +6,5 @@ length(a)
 
 push!(a, false)
 length(a)
-a
+
+show(a)

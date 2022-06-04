@@ -5,5 +5,4 @@ else
     a = 30
 end
 
-a
-b
+show(a)
