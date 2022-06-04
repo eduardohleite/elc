@@ -37,5 +37,8 @@ Value builtin_popat_bang(std::vector<Value> params);
 Value builtin_at(std::vector<Value> params);
 Value builtin_in(std::vector<Value> params);
 
+// pretty print
+Value builtin_show(std::vector<Value> params);
+
 } // namespace Runtime
 } // namespace ELang

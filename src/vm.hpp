@@ -8,8 +8,6 @@
 #include <memory>
 #include <vector>
 
-#define DEBUG
-
 
 namespace ELang {
 namespace Runtime {

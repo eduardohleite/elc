@@ -514,3 +514,50 @@ Value ELang::Runtime::builtin_in(std::vector<Value> params) {
     }
 }
 
+Value ELang::Runtime::builtin_show(std::vector<Value> params) {
+    if (params.size() != 1) {
+        // TODO: invalid parameter count
+    }
+
+    const auto val = params.at(0);
+
+    switch (val.type) {
+        case Type::Integer:
+            std::cout << std::get<long>(val.value) << " (type: Integer)";
+            break;
+        case Type::Float:
+            std::cout << std::get<double>(val.value) << " (type: Float)";
+            break;
+        case Type::Boolean:
+            std::cout << (std::get<bool>(val.value) ? "true" : "false") << " (type: Boolean)";
+            break;
+        case Type::Vector:
+            auto vec = std::get<std::shared_ptr<std::vector<Value>>>(val.value);
+            std::cout << "Vector with " << vec->size() << " elements:" << std::endl;
+            for (auto i = 0; i< vec->size(); i++) {
+                std::cout << i << ": ";
+                auto el = vec->at(i);
+
+                switch (el.type) {
+                    case Type::Integer:
+                        std::cout << std::get<long>(el.value) << " (type: Integer)";
+                        break;
+                    case Type::Float:
+                        std::cout << std::get<double>(el.value) << " (type: Float)";
+                        break;
+                    case Type::Boolean:
+                        std::cout << (std::get<bool>(el.value) ? "true" : "false") << " (type: Boolean)";
+                        break;
+                    case Type::Vector:
+                        std::cout << "(type: Vector)";
+                        break;
+                }
+
+                std::cout << std::endl;
+            }
+            break;
+    }
+
+    std::cout << std::endl;
+    return Value();
+}

@@ -365,45 +365,7 @@ Type Interpreter::get_type_from_identifier(const std::string& identifier) const 
 
 void Interpreter::print_value(const Value& v) const {
     cout << "Evaluated: ";
-
-    switch (v.type) {
-        case Type::Integer:
-            cout << std::get<long>(v.value) << " (type: Integer)";
-            break;
-        case Type::Float:
-            cout << std::get<double>(v.value) << " (type: Float)";
-            break;
-        case Type::Boolean:
-            cout << (std::get<bool>(v.value) ? "true" : "false") << " (type: Boolean)";
-            break;
-        case Type::Vector:
-            auto vec = std::get<shared_ptr<vector<Value>>>(v.value);
-            cout << "Vector with " << vec->size() << " elements:" << endl;
-            for (auto i = 0; i< vec->size(); i++) {
-                cout << i << ": ";
-                auto el = vec->at(i);
-
-                switch (el.type) {
-                    case Type::Integer:
-                        cout << std::get<long>(el.value) << " (type: Integer)";
-                        break;
-                    case Type::Float:
-                        cout << std::get<double>(el.value) << " (type: Float)";
-                        break;
-                    case Type::Boolean:
-                        cout << (std::get<bool>(el.value) ? "true" : "false") << " (type: Boolean)";
-                        break;
-                    case Type::Vector:
-                        cout << "(type: Vector)";
-                        break;
-                }
-
-                cout << endl;
-            }
-            break;
-    }
-
-    cout << endl;
+    builtin_show({v});
 }
 
 void Interpreter::register_builtins() {
@@ -480,6 +442,8 @@ void Interpreter::register_builtins() {
 
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__at__", { Argument("vec", Type::Vector), Argument("index", Type::Integer) }, builtin_at)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__in__", { Argument("vec", Type::Vector), Argument("value", Type::Any) }, builtin_in)));
+
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("show", { Argument("value", Type::Any) }, builtin_show)));
 }
 
 Interpreter::Interpreter() {
