@@ -331,7 +331,7 @@ Value ELang::Runtime::builtin_zeros(std::vector<Value> params) {
         auto vec = std::make_shared<std::vector<Value>>();
         auto nval = std::get<long>(n.value);
 
-        for (auto i = 0; i < nval; i++) {
+        for (long i = 0; i < nval; ++i) {
             vec->push_back(Value(0l));
         }
 
@@ -352,7 +352,7 @@ Value ELang::Runtime::builtin_ones(std::vector<Value> params) {
         auto vec = std::make_shared<std::vector<Value>>();
         auto nval = std::get<long>(n.value);
 
-        for (auto i = 0; i < nval; i++) {
+        for (long i = 0; i < nval; ++i) {
             vec->push_back(Value(1l));
         }
 
@@ -401,7 +401,7 @@ Value ELang::Runtime::builtin_range(std::vector<Value> params) {
         auto minval = has_min ? std::get<long>(min.value) - 1 : 0;
         auto maxval = std::get<long>(max.value);
 
-        for (auto i = minval; i < maxval; i++) {
+        for (long i = minval; i < maxval; ++i) {
             vec->push_back(Value(i+1));
         }
 
@@ -534,7 +534,7 @@ Value ELang::Runtime::builtin_show(std::vector<Value> params) {
         case Type::Vector:
             auto vec = std::get<std::shared_ptr<std::vector<Value>>>(val.value);
             std::cout << "Vector with " << vec->size() << " elements:" << std::endl;
-            for (auto i = 0; i< vec->size(); i++) {
+            for (std::size_t i = 0; i< vec->size(); ++i) {
                 std::cout << i << ": ";
                 auto el = vec->at(i);
 

@@ -32,7 +32,7 @@ Value Interpreter::eval_expression(const Expression& expression, std::shared_ptr
     const auto vector_expr = dynamic_cast<const VectorExpression*>(expr_ptr);
     if (nullptr != vector_expr) {
         auto vec = make_shared<vector<Value>>();
-        for (auto it = vector_expr->arguments.begin(); it != vector_expr->arguments.end(); it++) {
+        for (auto it = vector_expr->arguments.begin(); it != vector_expr->arguments.end(); ++it) {
             vec->push_back(eval_expression(**it, context));
         }
 
@@ -189,7 +189,7 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, st
 
     // parse expression arguments into values
     auto expression_values = vector<Value>();
-    for (auto it = expression->arguments.begin(); it != expression->arguments.end(); it++) {
+    for (auto it = expression->arguments.begin(); it != expression->arguments.end(); ++it) {
         expression_values.push_back(eval_expression(**it, context));
     }
 
@@ -198,13 +198,13 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, st
         throw -1;
     }
 
-    for (auto it = methods.begin(); it != methods.end(); it++) {       
+    for (auto it = methods.begin(); it != methods.end(); ++it) {       
         auto ptr = *it;
 
         if (ptr->arguments.size() == expression_values.size()) {
             auto match = true;
 
-            for (auto i = 0; i < ptr->arguments.size(); i++) {
+            for (std::size_t i = 0; i < ptr->arguments.size(); ++i) {
                 match &= (ptr->arguments[i].type == Type::Any || ptr->arguments[i].type == expression_values[i].type);
             }
 
@@ -219,7 +219,7 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, st
                     // todo: function needs to return the last evaluated expression
                     auto block_context = make_shared<Context>(context);
 
-                    for (auto i = 0; i < ptr->arguments.size(); i++) {
+                    for (auto i = 0; i < ptr->arguments.size(); ++i) {
                         block_context->assign_variable(ptr->arguments[i].name, expression_values[i], true);
                     }
                     
@@ -236,7 +236,7 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, st
 Value Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
     auto last_evaluated_value = Value();
 
-    for (auto it = program->statements.begin(); it != program->statements.end(); it++) {
+    for (auto it = program->statements.begin(); it != program->statements.end(); ++it) {
         const auto statement = *it;
 
         // check for statement types
@@ -295,7 +295,7 @@ Value Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
             }
 
             auto iterator_value = std::get<shared_ptr<vector<Value>>>(iterator.value);
-            for (auto it = iterator_value->begin(); it != iterator_value->end(); it++) {
+            for (auto it = iterator_value->begin(); it != iterator_value->end(); ++it) {
                 context->assign_variable(for_loop->id.name, *it);
                 last_evaluated_value = run(for_loop->block, context);
             }
