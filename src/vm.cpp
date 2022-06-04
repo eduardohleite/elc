@@ -222,9 +222,8 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, st
                     for (auto i = 0; i < ptr->arguments.size(); i++) {
                         block_context->assign_variable(ptr->arguments[i].name, expression_values[i]);
                     }
-
-                    run(custom->block, block_context);
-                    return Value();
+                    
+                    return run(custom->block, block_context);
                 }
             }
         }
@@ -234,7 +233,9 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, st
     throw -1;
 }
 
-void Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
+Value Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
+    auto last_evaluated_value = Value();
+
     for (auto it = program->statements.begin(); it != program->statements.end(); it++) {
         const auto statement = *it;
 
@@ -250,11 +251,14 @@ void Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
 
             auto condition_value = std::get<bool>(condition.value);
             if (condition_value) {
-                run(if_statement->then_block, context);
+                last_evaluated_value = run(if_statement->then_block, context);
             }
             else {
                 if (nullptr != if_statement->else_block) {
-                    run(if_statement->else_block, context);
+                    last_evaluated_value = run(if_statement->else_block, context);
+                }
+                else {
+                    last_evaluated_value = Value();
                 }
             }
             continue;
@@ -272,7 +276,7 @@ void Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
             if (condition_value) {
 
                 while (condition_value) {
-                    run(while_loop->block, context);
+                    last_evaluated_value = run(while_loop->block, context);
 
                     // reevaluate condition
                     condition = eval_expression(while_loop->condition, context);
@@ -293,7 +297,7 @@ void Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
             auto iterator_value = std::get<shared_ptr<vector<Value>>>(iterator.value);
             for (auto it = iterator_value->begin(); it != iterator_value->end(); it++) {
                 context->assign_variable(for_loop->id.name, *it);
-                run(for_loop->block, context);
+                last_evaluated_value = run(for_loop->block, context);
             }
             continue;
         }
@@ -310,22 +314,34 @@ void Interpreter::run(const Block* program, std::shared_ptr<Context> context) {
             }
 
             context->register_method(shared_ptr<Method>(new CustomMethod(func_decl->id.name, args, func_decl->block)));
+
+            last_evaluated_value = Value();
+            continue;
         }
         
         const auto assignment = dynamic_cast<Assignment*>(statement);
         if (nullptr != assignment) {
             auto value = eval_expression(assignment->expression, context);
             context->assign_variable(assignment->id.name, value);
+
+            last_evaluated_value = Value();
             continue;
         }
 
         const auto expression_statement = dynamic_cast<ExpressionStatement*>(statement);
         if (nullptr != expression_statement) {
             const auto res = eval_expression(expression_statement->expression, context);
+
+#ifdef DEBUG
             print_value(res);
+#endif // DEBUG
+
+            last_evaluated_value = res;
             continue;
         }
     }
+
+    return last_evaluated_value;
 }
 
 Type Interpreter::get_type_from_identifier(const std::string& identifier) const {

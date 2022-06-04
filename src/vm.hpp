@@ -8,6 +8,9 @@
 #include <memory>
 #include <vector>
 
+#define DEBUG
+
+
 namespace ELang {
 namespace Runtime {
 
@@ -32,7 +35,7 @@ public:
     Value(bool value): value(value), type(Type::Boolean) { }
     Value(std::shared_ptr<std::vector<Value>> value): value(value), type(Type::Vector) { }
 
-    Value() { }
+    Value(): type(Type::Void) { }
 
     Type type;
     Variant value;
@@ -95,7 +98,7 @@ public:
 
     std::shared_ptr<Context> global_context;
 
-    void run(const ELang::Meta::Block* program, std::shared_ptr<Context> context);
+    Value run(const ELang::Meta::Block* program, std::shared_ptr<Context> context);
     void register_builtins();
 
 protected:
