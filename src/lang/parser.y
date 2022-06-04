@@ -13,21 +13,25 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
     ELang::Meta::Expression* expression;
     ELang::Meta::Statement* statement;
     ELang::Meta::Identifier* identifier;
-    std::vector<ELang::Meta::Expression*> *expressions;
+    ELang::Meta::TypedIdentifier* typed_identifier;
+    std::vector<ELang::Meta::Expression*>* expressions;
+    std::vector<ELang::Meta::TypedIdentifier*>* typed_identifiers;
     std::string* string;
     int token;
 }
 
 %token <string> TIDENTIFIER TINTEGER TFLOAT
-%token <string> TIF TELSE TFOR TWHILE TEND
+%token <string> TIF TELSE TFOR TWHILE TFUNCTION TEND
 %token <string> TTRUE TFALSE
-%token <token> TLPAREN TRPAREN TLBRACKET TRBRACKET TCOMMA TASSIGN TCOLON TIN
+%token <token> TLPAREN TRPAREN TLBRACKET TRBRACKET TCOMMA TASSIGN TCOLON TDOUBLECOLON TIN
 
 %type <identifier> identifier
 %type <expression> number boolean expression
 %type <expressions> arguments
+%type <typed_identifier> typed
+%type <typed_identifiers> params
 %type <block> program statements
-%type <statement> statement if_stmt loop
+%type <statement> statement if_stmt loop func
 %type <token> arithmetic binary comparison
 
 %nonassoc TEQ TNE TGTE TGT TLTE TLT TIN
@@ -45,7 +49,8 @@ void yyerror(const char *s) { printf("ERROR: %s", s); }
 program    : statements { main_block = $1; }
            ;
 
-statements : statement { $$ = new ELang::Meta::Block(); $$->statements.push_back($<statement>1); }
+statements : { $$ = new ELang::Meta::Block(); }
+           | statement { $$ = new ELang::Meta::Block(); $$->statements.push_back($<statement>1); }
            | statements statement { $1->statements.push_back($<statement>2); }
            ;
 
@@ -53,6 +58,7 @@ statement  : expression { $$ = new ELang::Meta::ExpressionStatement(*$1); }
            | identifier TASSIGN expression { $$ = new ELang::Meta::Assignment(*$1, *$3); }
            | if_stmt
            | loop
+           | func
            ;
 
 if_stmt    : TIF expression statements TEND { $$ = new ELang::Meta::IfStatement(*$2, $3); }
@@ -63,6 +69,8 @@ loop       : TFOR identifier TIN expression statements TEND { $$ = new ELang::Me
            | TWHILE expression statements TEND { $$ = new ELang::Meta::WhileLoop(*$2, $3); }
            ;
 
+func       : TFUNCTION identifier TLPAREN params TRPAREN statements TEND { $$ = new ELang::Meta::Function(*$2, *$4, $6); }
+           ;
 
 identifier : TIDENTIFIER { $$ = new ELang::Meta::Identifier(*$1); delete $1; }
            ;
@@ -93,6 +101,14 @@ expression : identifier TLPAREN arguments TRPAREN { $$ = new ELang::Meta::Functi
 arguments  : { $$ = new std::vector<ELang::Meta::Expression*>(); }
            | expression { $$ = new std::vector<ELang::Meta::Expression*>(); $$->push_back($1); }
            | arguments TCOMMA expression { $1->push_back($3); }
+           ;
+
+params     : { $$ = new std::vector<ELang::Meta::TypedIdentifier*>(); }
+           | typed { $$ = new std::vector<ELang::Meta::TypedIdentifier*>(); $$->push_back($1); }
+           | params TCOMMA typed { $1->push_back($3); }
+           ;
+
+typed      : identifier TDOUBLECOLON identifier { $$ = new ELang::Meta::TypedIdentifier(*$3, *$1); }
            ;
 
 arithmetic : TPLUS
