@@ -384,6 +384,10 @@ Value ELang::Runtime::builtin_length(const std::vector<Value>& params) {
         const auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
         return Value(static_cast<long>(vecval->size()));
     }
+    else if (vec.type == Type::String) {
+        const auto strval = std::get<std::shared_ptr<std::string>>(vec.value);
+        return Value(static_cast<long>(strval->length()));
+    }
     else {
         // TODO: error - invalid parameter types
     }
