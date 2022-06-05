@@ -44,8 +44,7 @@ public:
 
     inline std::string parse_string(const std::string& input) {
         if (input.length() > 2) {
-            const auto x = input.substr(1, input.length() - 2);
-            return x;
+            return input.substr(1, input.length() - 2);
         }
         else {
             return input;
