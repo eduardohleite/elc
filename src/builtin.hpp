@@ -42,6 +42,10 @@ Value builtin_show(const std::vector<Value>& params);
 
 // strings
 Value builtin_substr(const std::vector<Value>& params);
+Value builtin_lower(const std::vector<Value>& params);
+Value builtin_upper(const std::vector<Value>& params);
+Value builtin_lower_bang(const std::vector<Value>& params);
+Value builtin_upper_bang(const std::vector<Value>& params);
 
 } // namespace Runtime
 } // namespace ELang

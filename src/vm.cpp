@@ -460,6 +460,11 @@ void Interpreter::register_builtins() {
 
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("substr", { Argument("str", Type::String), Argument("length", Type::Integer) }, builtin_substr)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("substr", { Argument("str", Type::String), Argument("start", Type::Integer), Argument("length", Type::Integer) }, builtin_substr)));
+
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("lower", { Argument("str", Type::String) }, builtin_lower)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("upper", { Argument("str", Type::String) }, builtin_upper)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("lower!", { Argument("str", Type::String) }, builtin_lower_bang)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("upper!", { Argument("str", Type::String) }, builtin_upper_bang)));
 }
 
 Interpreter::Interpreter() {

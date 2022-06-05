@@ -3,6 +3,8 @@
 
 #include <memory>
 #include <algorithm>
+#include <cctype>
+#include <string>
 
 using namespace ELang::Runtime;
 
@@ -609,7 +611,89 @@ Value ELang::Runtime::builtin_substr(const std::vector<Value>& params) {
         const auto full_str = std::get<std::shared_ptr<std::string>>(str.value);
         const auto start_val = has_start ? std::get<long>(start.value) - 1 : 0;
 
-        return std::make_shared<std::string>(full_str->substr(start_val, std::get<long>(len.value)));
+        return Value(std::make_shared<std::string>(full_str->substr(start_val, std::get<long>(len.value))));
+    }
+    else {
+        // TODO: error - invalid parameter types
+    }
+}
+
+Value ELang::Runtime::builtin_lower(const std::vector<Value>& params) {
+    if (params.size() != 1) {
+        // TODO: invalid parameter count
+    }
+
+    const auto str = params.at(0);
+    
+    if (str.type == Type::String) {
+        const auto strval = std::get<std::shared_ptr<std::string>>(str.value);
+        std::string result;
+
+        std::transform(strval->begin(), strval->end(), result.begin(),
+            [](unsigned char c){ return std::tolower(c); });
+
+        return Value(std::make_shared<std::string>(result));
+    }
+    else {
+        // TODO: error - invalid parameter types
+    }
+}
+
+Value ELang::Runtime::builtin_upper(const std::vector<Value>& params) {
+    if (params.size() != 1) {
+        // TODO: invalid parameter count
+    }
+
+    const auto str = params.at(0);
+    
+    if (str.type == Type::String) {
+        const auto strval = std::get<std::shared_ptr<std::string>>(str.value);
+        std::string result;
+
+        std::transform(strval->begin(), strval->end(), result.begin(),
+            [](unsigned char c){ return std::toupper(c); });
+
+        return Value(std::make_shared<std::string>(result));
+    }
+    else {
+        // TODO: error - invalid parameter types
+    }
+}
+
+Value ELang::Runtime::builtin_lower_bang(const std::vector<Value>& params) {
+    if (params.size() != 1) {
+        // TODO: invalid parameter count
+    }
+
+    const auto str = params.at(0);
+    
+    if (str.type == Type::String) {
+        const auto strval = std::get<std::shared_ptr<std::string>>(str.value);
+
+        std::transform(strval->begin(), strval->end(), strval->begin(),
+            [](unsigned char c){ return std::tolower(c); });
+
+        return Value(std::make_shared<std::string>(*strval));
+    }
+    else {
+        // TODO: error - invalid parameter types
+    }
+}
+
+Value ELang::Runtime::builtin_upper_bang(const std::vector<Value>& params) {
+    if (params.size() != 1) {
+        // TODO: invalid parameter count
+    }
+
+    const auto str = params.at(0);
+    
+    if (str.type == Type::String) {
+        const auto strval = std::get<std::shared_ptr<std::string>>(str.value);
+
+        std::transform(strval->begin(), strval->end(), strval->begin(),
+            [](unsigned char c){ return std::toupper(c); });
+
+        return Value(std::make_shared<std::string>(*strval));
     }
     else {
         // TODO: error - invalid parameter types
