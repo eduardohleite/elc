@@ -12,8 +12,10 @@ build: gen-lang
 		src/vm.cpp \
 		src/main.cpp
 
-debug-build: gen-lang
+debug-setup: gen-lang
 	meson out/debug
+
+debug-build: gen-lang
 	ninja -C out/debug
 
 clean:

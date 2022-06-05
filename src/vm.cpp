@@ -174,6 +174,9 @@ Value Interpreter::eval_expression(const Expression& expression, const std::shar
     if (nullptr != identifier_expr) {
         return context->read_variable(identifier_expr->name);
     }
+
+    std::cerr << "Invalid expression" << std::endl;
+    throw -1;
 }
 
 void Context::locate_methods(std::vector<std::shared_ptr<ELang::Runtime::Method>>& results, const std::string& name) const {
@@ -225,7 +228,7 @@ Value Interpreter::call_function(const ELang::Meta::FunctionCall* expression, co
                     // todo: function needs to return the last evaluated expression
                     const auto block_context = make_shared<Context>(context);
 
-                    for (auto i = 0; i < ptr->arguments.size(); ++i) {
+                    for (std::size_t i = 0; i < ptr->arguments.size(); ++i) {
                         block_context->assign_variable(ptr->arguments[i].name, expression_values[i], true);
                     }
                     

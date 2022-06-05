@@ -61,7 +61,7 @@ public:
     Expression& rhs;
 
     ArithmeticExpression(Expression& lhs, const int op, Expression& rhs):
-        lhs(lhs), op(op), rhs(rhs) { }
+        op(op), lhs(lhs), rhs(rhs) { }
 };
 
 class NegatedBinaryExpression: public Expression {
@@ -78,7 +78,7 @@ public:
     Expression& rhs;
 
     BinaryExpression(Expression& lhs, const int op, Expression& rhs):
-        lhs(lhs), op(op), rhs(rhs) { }
+        op(op), lhs(lhs), rhs(rhs) { }
 };
 
 class ComparisonExpression: public Expression {
@@ -88,7 +88,7 @@ public:
     Expression& rhs;
 
     ComparisonExpression(Expression& lhs, const int op, Expression& rhs):
-        lhs(lhs), op(op), rhs(rhs) { }
+        op(op), lhs(lhs), rhs(rhs) { }
 };
 
 class ExpressionStatement: public Statement {

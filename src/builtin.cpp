@@ -10,7 +10,8 @@ using namespace ELang::Runtime;
 
 Value ELang::Runtime::builtin_add(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid operand count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto lhs = params.at(0);
@@ -33,13 +34,15 @@ Value ELang::Runtime::builtin_add(const std::vector<Value>& params) {
              + *std::get<std::shared_ptr<std::string>>(rhs.value)));
     }
     else {
-        // TODO: error - invalid operand types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_sub(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid operand count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto lhs = params.at(0);
@@ -58,13 +61,15 @@ Value ELang::Runtime::builtin_sub(const std::vector<Value>& params) {
         return Value(std::get<double>(lhs.value) - std::get<double>(rhs.value));
     }
     else {
-        // TODO: error - invalid operand types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_mul(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid operand count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto lhs = params.at(0);
@@ -83,13 +88,15 @@ Value ELang::Runtime::builtin_mul(const std::vector<Value>& params) {
         return Value(std::get<double>(lhs.value) * std::get<double>(rhs.value));
     }
     else {
-        // TODO: error - invalid operand types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_div(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid operand count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto lhs = params.at(0);
@@ -108,13 +115,15 @@ Value ELang::Runtime::builtin_div(const std::vector<Value>& params) {
         return Value(std::get<double>(lhs.value) / std::get<double>(rhs.value));
     }
     else {
-        // TODO: error - invalid operand types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_not(const std::vector<Value>& params) {
     if (params.size() != 1) {
-        // TODO: invalid operand count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 1" << std::endl;
+        throw -1;
     }
 
     const auto expr = params.at(0);
@@ -123,13 +132,15 @@ Value ELang::Runtime::builtin_not(const std::vector<Value>& params) {
         return Value(!std::get<bool>(expr.value));
     }
     else {
-        // TODO: error - invalid operand types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_and(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid operand count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto lhs = params.at(0);
@@ -139,13 +150,15 @@ Value ELang::Runtime::builtin_and(const std::vector<Value>& params) {
         return Value(std::get<bool>(lhs.value) && std::get<bool>(rhs.value));
     }
     else {
-        // TODO: error - invalid operand types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_or(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid operand count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto lhs = params.at(0);
@@ -155,13 +168,15 @@ Value ELang::Runtime::builtin_or(const std::vector<Value>& params) {
         return Value(std::get<bool>(lhs.value) || std::get<bool>(rhs.value));
     }
     else {
-        // TODO: error - invalid operand types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_eq(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid operand count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto lhs = params.at(0);
@@ -186,13 +201,15 @@ Value ELang::Runtime::builtin_eq(const std::vector<Value>& params) {
         return Value(*std::get<std::shared_ptr<std::string>>(lhs.value) == *std::get<std::shared_ptr<std::string>>(rhs.value));
     }
     else {
-        // TODO: error - invalid operand types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_ne(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid operand count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto lhs = params.at(0);
@@ -217,13 +234,15 @@ Value ELang::Runtime::builtin_ne(const std::vector<Value>& params) {
         return Value(*std::get<std::shared_ptr<std::string>>(lhs.value) != *std::get<std::shared_ptr<std::string>>(rhs.value));
     }
     else {
-        // TODO: error - invalid operand types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_gte(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid operand count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto lhs = params.at(0);
@@ -245,13 +264,15 @@ Value ELang::Runtime::builtin_gte(const std::vector<Value>& params) {
         return Value(std::get<bool>(lhs.value) >= std::get<bool>(rhs.value));
     }
     else {
-        // TODO: error - invalid operand types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_gt(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid operand count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto lhs = params.at(0);
@@ -273,13 +294,15 @@ Value ELang::Runtime::builtin_gt(const std::vector<Value>& params) {
         return Value(std::get<bool>(lhs.value) > std::get<bool>(rhs.value));
     }
     else {
-        // TODO: error - invalid operand types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_lte(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid operand count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto lhs = params.at(0);
@@ -301,13 +324,15 @@ Value ELang::Runtime::builtin_lte(const std::vector<Value>& params) {
         return Value(std::get<bool>(lhs.value) <= std::get<bool>(rhs.value));
     }
     else {
-        // TODO: error - invalid operand types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_lt(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid operand count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto lhs = params.at(0);
@@ -329,13 +354,15 @@ Value ELang::Runtime::builtin_lt(const std::vector<Value>& params) {
         return Value(std::get<bool>(lhs.value) < std::get<bool>(rhs.value));
     }
     else {
-        // TODO: error - invalid operand types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_zeros(const std::vector<Value>& params) {
     if (params.size() != 1) {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 1" << std::endl;
+        throw -1;
     }
 
     const auto n = params.at(0);
@@ -350,13 +377,15 @@ Value ELang::Runtime::builtin_zeros(const std::vector<Value>& params) {
         return Value(vec);
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_ones(const std::vector<Value>& params) {
     if (params.size() != 1) {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 1" << std::endl;
+        throw -1;
     }
 
     auto n = params.at(0);
@@ -371,13 +400,15 @@ Value ELang::Runtime::builtin_ones(const std::vector<Value>& params) {
         return Value(vec);
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_length(const std::vector<Value>& params) {
     if (params.size() != 1) {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 1" << std::endl;
+        throw -1;
     }
 
     const auto vec = params.at(0);
@@ -391,7 +422,8 @@ Value ELang::Runtime::builtin_length(const std::vector<Value>& params) {
         return Value(static_cast<long>(strval->length()));
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
@@ -409,7 +441,8 @@ Value ELang::Runtime::builtin_range(const std::vector<Value>& params) {
         max = params.at(1);
     }
     else {
-        // TODO: invalid parameter count
+       std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 1 or 2" << std::endl;
+        throw -1;
     }
 
     if (max.type == Type::Integer && (! has_min || (has_min && min.type == Type::Integer))) {
@@ -424,7 +457,8 @@ Value ELang::Runtime::builtin_range(const std::vector<Value>& params) {
         return Value(vec);
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
@@ -432,7 +466,8 @@ Value ELang::Runtime::builtin_range(const std::vector<Value>& params) {
 
 Value ELang::Runtime::builtin_push_bang(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto vec = params.at(0);
@@ -462,13 +497,15 @@ Value ELang::Runtime::builtin_push_bang(const std::vector<Value>& params) {
         return Value(vec);
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_pop_bang(const std::vector<Value>& params) {
     if (params.size() != 1) {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 1" << std::endl;
+        throw -1;
     }
 
     const auto vec = params.at(0);
@@ -483,17 +520,20 @@ Value ELang::Runtime::builtin_pop_bang(const std::vector<Value>& params) {
             return Value(grab);
         }
         else {
-            // TODO: error
+            std::cerr << "Out of bounds." << std::endl;
+            throw -1;
         }
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_at(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto vec = params.at(0);
@@ -514,13 +554,15 @@ Value ELang::Runtime::builtin_at(const std::vector<Value>& params) {
         return Value(std::make_shared<std::string>(1, strval->at(indexval-1)));
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_in(const std::vector<Value>& params) {
     if (params.size() != 2) {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 2" << std::endl;
+        throw -1;
     }
 
     const auto vec = params.at(0);
@@ -533,13 +575,15 @@ Value ELang::Runtime::builtin_in(const std::vector<Value>& params) {
             [val](const ELang::Runtime::Value v) { return  v.type == val.type && v.value == val.value; }) != vecval->end());
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_show(const std::vector<Value>& params) {
     if (params.size() != 1) {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 1" << std::endl;
+        throw -1;
     }
 
     const auto val = params.at(0);
@@ -556,6 +600,9 @@ Value ELang::Runtime::builtin_show(const std::vector<Value>& params) {
             break;
         case Type::String:
             std::cout << "'" << *std::get<std::shared_ptr<std::string>>(val.value) << "' (type: String)";
+            break;
+        case Type::Void:
+            std::cout << " (type: Void)" << std::endl;
             break;
         case Type::Vector:
             const auto vec = std::get<std::shared_ptr<std::vector<Value>>>(val.value);
@@ -579,6 +626,8 @@ Value ELang::Runtime::builtin_show(const std::vector<Value>& params) {
                         break;
                     case Type::Vector:
                         std::cout << "(type: Vector)";
+                        break;
+                    default:
                         break;
                 }
 
@@ -605,7 +654,8 @@ Value ELang::Runtime::builtin_substr(const std::vector<Value>& params) {
         len = params.at(2);
     }
     else {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 1 or 2" << std::endl;
+        throw -1;
     }
 
     const auto str = params.at(0);
@@ -617,13 +667,15 @@ Value ELang::Runtime::builtin_substr(const std::vector<Value>& params) {
         return Value(std::make_shared<std::string>(full_str->substr(start_val, std::get<long>(len.value))));
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_lower(const std::vector<Value>& params) {
     if (params.size() != 1) {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 1" << std::endl;
+        throw -1;
     }
 
     const auto str = params.at(0);
@@ -638,13 +690,15 @@ Value ELang::Runtime::builtin_lower(const std::vector<Value>& params) {
         return Value(std::make_shared<std::string>(result));
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_upper(const std::vector<Value>& params) {
     if (params.size() != 1) {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 1" << std::endl;
+        throw -1;
     }
 
     const auto str = params.at(0);
@@ -659,13 +713,15 @@ Value ELang::Runtime::builtin_upper(const std::vector<Value>& params) {
         return Value(std::make_shared<std::string>(result));
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_lower_bang(const std::vector<Value>& params) {
     if (params.size() != 1) {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 1" << std::endl;
+        throw -1;
     }
 
     const auto str = params.at(0);
@@ -679,13 +735,15 @@ Value ELang::Runtime::builtin_lower_bang(const std::vector<Value>& params) {
         return Value(std::make_shared<std::string>(*strval));
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
 Value ELang::Runtime::builtin_upper_bang(const std::vector<Value>& params) {
     if (params.size() != 1) {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 1" << std::endl;
+        throw -1;
     }
 
     const auto str = params.at(0);
@@ -699,7 +757,8 @@ Value ELang::Runtime::builtin_upper_bang(const std::vector<Value>& params) {
         return Value(std::make_shared<std::string>(*strval));
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
@@ -707,7 +766,8 @@ Value ELang::Runtime::builtin_split(const std::vector<Value>& params) {
     const auto param_cnt = params.size();
 
     if (param_cnt < 1 || param_cnt > 2) {
-        // TODO: invalid parameter count
+        std::cerr << "Invalid parameter count. Found " << params.size() << ". Expected 1 or 2" << std::endl;
+        throw -1;
     }
 
     const auto str = params.at(0);
@@ -720,7 +780,8 @@ Value ELang::Runtime::builtin_split(const std::vector<Value>& params) {
             const auto sep = params.at(1);
 
             if (sep.type != Type::String) {
-                // TODO: error - invalid parameter types
+                std::cerr << "Invalid parameter types" << std::endl;
+                throw -1;
             }
 
             separator = *std::get<std::shared_ptr<std::string>>(sep.value);
@@ -740,7 +801,8 @@ Value ELang::Runtime::builtin_split(const std::vector<Value>& params) {
         return Value(result);
     }
     else {
-        // TODO: error - invalid parameter types
+        std::cerr << "Invalid parameter types" << std::endl;
+        throw -1;
     }
 }
 
