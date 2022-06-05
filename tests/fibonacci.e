@@ -1,3 +1,5 @@
+# test recursion implementation
+
 function fib(n::Integer)
   if n < 2
     n
@@ -6,4 +8,4 @@ function fib(n::Integer)
   end
 end
 
-show(fib(10))
+show(fib(10)) # TODO: this currently breaks at around 40

@@ -1,3 +1,5 @@
+# test vector type
+
 a = zeros(2)
 length(a)
 
