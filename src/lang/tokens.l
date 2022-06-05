@@ -10,6 +10,7 @@ extern "C" int yywrap() { }
 
 %%
 
+\#.*\n ;
 \'[^\']*\' SAVE_TOKEN; return TSTRING;
 
 [ \t\n] ;
