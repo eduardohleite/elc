@@ -574,6 +574,9 @@ Value ELang::Runtime::builtin_show(const std::vector<Value>& params) {
                     case Type::Boolean:
                         std::cout << (std::get<bool>(el.value) ? "true" : "false") << " (type: Boolean)";
                         break;
+                    case Type::String:
+                        std::cout << "'" << *std::get<std::shared_ptr<std::string>>(el.value) << "' (type: String)";
+                        break;
                     case Type::Vector:
                         std::cout << "(type: Vector)";
                         break;
@@ -699,3 +702,63 @@ Value ELang::Runtime::builtin_upper_bang(const std::vector<Value>& params) {
         // TODO: error - invalid parameter types
     }
 }
+
+Value ELang::Runtime::builtin_split(const std::vector<Value>& params) {
+    const auto param_cnt = params.size();
+
+    if (param_cnt < 1 || param_cnt > 2) {
+        // TODO: invalid parameter count
+    }
+
+    const auto str = params.at(0);
+
+    if (str.type == Type::String) {
+        std::string separator = " ";
+        const auto strval = std::get<std::shared_ptr<std::string>>(str.value);
+
+        if (param_cnt == 2) {
+            const auto sep = params.at(1);
+
+            if (sep.type != Type::String) {
+                // TODO: error - invalid parameter types
+            }
+
+            separator = *std::get<std::shared_ptr<std::string>>(sep.value);
+        }
+
+        size_t pos = 0, prev_pos = 0;
+        const auto result = std::make_shared<std::vector<Value>>();
+        while ((pos = strval->find(separator, prev_pos)) != std::string::npos) {
+            result->push_back(Value(std::make_shared<std::string>(strval->substr(prev_pos, pos - prev_pos))));
+            prev_pos = pos + 1;
+        }
+
+        if (prev_pos < strval->length()) {
+            result->push_back(Value(std::make_shared<std::string>(strval->substr(prev_pos, pos - prev_pos))));
+        }
+
+        return Value(result);
+    }
+    else {
+        // TODO: error - invalid parameter types
+    }
+}
+
+// Value ELang::Runtime::builtin_join(const std::vector<Value>& params) {
+//     if (params.size() != 2) {
+//         // TODO: invalid parameter count
+//     }
+
+//     const auto vec = params.at(0);
+//     const auto sep = params.at(1);
+
+//     if (vec.type == Type::Vector && sep.type == Type::String) {
+//         const auto sepval = std::get<std::shared_ptr<std::string>>(sep.value);
+//         const auto vecval = std::get<std::shared_ptr<std::vector<Value>>>(vec.value);
+
+//         // TODO
+//     }
+//     else {
+//         // TODO: error - invalid parameter types
+//     }
+// }

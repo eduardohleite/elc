@@ -36,6 +36,7 @@ Value builtin_pop_bang(const std::vector<Value>& params);
 Value builtin_popat_bang(const std::vector<Value>& params);
 Value builtin_at(const std::vector<Value>& params);
 Value builtin_in(const std::vector<Value>& params);
+// Value builtin_join(const std::vector<Value>& params);
 
 // pretty print
 Value builtin_show(const std::vector<Value>& params);
@@ -46,6 +47,7 @@ Value builtin_lower(const std::vector<Value>& params);
 Value builtin_upper(const std::vector<Value>& params);
 Value builtin_lower_bang(const std::vector<Value>& params);
 Value builtin_upper_bang(const std::vector<Value>& params);
+Value builtin_split(const std::vector<Value>& params);
 
 } // namespace Runtime
 } // namespace ELang
