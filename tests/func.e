@@ -1,3 +1,5 @@
+# test function implementation
+
 function sqr(x::Integer)
   x*x
 end

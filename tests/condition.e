@@ -1,3 +1,5 @@
+# test IF statement implementation
+
 if true
     a = 10
     b = false
