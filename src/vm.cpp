@@ -13,19 +13,25 @@ Value Interpreter::eval_expression(const Expression& expression, const std::shar
     // int constant
     const auto int_expr = dynamic_cast<const Integer*>(expr_ptr);
     if (nullptr != int_expr) {
-        return int_expr->value;
+        return Value(int_expr->value);
     }
 
     // float constant
     const auto float_expr = dynamic_cast<const Float*>(expr_ptr);
     if (nullptr != float_expr) {
-        return float_expr->value;
+        return Value(float_expr->value);
     }
 
     // boolean constant
     const auto bool_expr = dynamic_cast<const Boolean*>(expr_ptr);
     if (nullptr != bool_expr) {
-        return bool_expr->value;
+        return Value(bool_expr->value);
+    }
+
+    // string constant
+    const auto string_expr = dynamic_cast<const String*>(expr_ptr);
+    if (nullptr != string_expr) {
+        return Value(std::make_shared<std::string>(string_expr->value));
     }
 
     // vector expression
@@ -398,7 +404,7 @@ void Interpreter::register_builtins() {
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_eq)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_eq)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_eq)));
-
+    
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Integer) }, builtin_ne)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Float), Argument("rhs", Type::Integer) }, builtin_ne)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::Integer), Argument("rhs", Type::Float) }, builtin_ne)));
@@ -429,7 +435,7 @@ void Interpreter::register_builtins() {
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__lt__", { Argument("lhs", Type::Float), Argument("rhs", Type::Float) }, builtin_lt)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__lt__", { Argument("lhs", Type::Boolean), Argument("rhs", Type::Boolean) }, builtin_lt)));
 
-    // vector function
+    // vector functions
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("zeros", { Argument("n", Type::Integer) }, builtin_zeros)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("ones", { Argument("n", Type::Integer) }, builtin_ones)));
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("length", { Argument("vec", Type::Vector) }, builtin_length)));
@@ -444,6 +450,24 @@ void Interpreter::register_builtins() {
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__in__", { Argument("vec", Type::Vector), Argument("value", Type::Any) }, builtin_in)));
 
     global_context->register_method(shared_ptr<Method>(new BuiltinMethod("show", { Argument("value", Type::Any) }, builtin_show)));
+
+    // string functions
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__add__", { Argument("lhs", Type::String), Argument("rhs", Type::String) }, builtin_add)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__eq__", { Argument("lhs", Type::String), Argument("rhs", Type::String) }, builtin_eq)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__ne__", { Argument("lhs", Type::String), Argument("rhs", Type::String) }, builtin_ne)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("__at__", { Argument("str", Type::String), Argument("index", Type::Integer) }, builtin_at)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("length", { Argument("vec", Type::String) }, builtin_length)));
+
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("substr", { Argument("str", Type::String), Argument("length", Type::Integer) }, builtin_substr)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("substr", { Argument("str", Type::String), Argument("start", Type::Integer), Argument("length", Type::Integer) }, builtin_substr)));
+
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("lower", { Argument("str", Type::String) }, builtin_lower)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("upper", { Argument("str", Type::String) }, builtin_upper)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("lower!", { Argument("str", Type::String) }, builtin_lower_bang)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("upper!", { Argument("str", Type::String) }, builtin_upper_bang)));
+
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("split", { Argument("str", Type::String) }, builtin_split)));
+    global_context->register_method(shared_ptr<Method>(new BuiltinMethod("split", { Argument("str", Type::String), Argument("sep", Type::String) }, builtin_split)));
 }
 
 Interpreter::Interpreter() {

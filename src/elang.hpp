@@ -38,6 +38,22 @@ public:
     Boolean(const bool value): value(value) { }
 };
 
+class String: public Expression {
+public:
+    const std::string value;
+
+    inline std::string parse_string(const std::string& input) {
+        if (input.length() > 2) {
+            return input.substr(1, input.length() - 2);
+        }
+        else {
+            return input;
+        }
+    }
+
+    String(const std::string& v): value(parse_string(v)) { }
+};
+
 class ArithmeticExpression: public Expression {
 public:
     const int op;

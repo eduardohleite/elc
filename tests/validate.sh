@@ -2,7 +2,7 @@
 
 . osht.sh
 
-PLAN 10
+PLAN 11
 
 run_script() {
     local SCRIPT=$1
@@ -38,4 +38,8 @@ IS "$OUTPUT" == *"20 (type: Integer)"
 
 # fibonacci.e
 run_script "fibonacci.e"
-IS "$OUTPUT" == *"6765 (type: Integer)"
+IS "$OUTPUT" == *"55 (type: Integer)"
+
+# string.e
+run_script "string.e"
+IS "$OUTPUT" == *"'the book is on the table' (type: String)"

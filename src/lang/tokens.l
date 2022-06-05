@@ -10,6 +10,8 @@ extern "C" int yywrap() { }
 
 %%
 
+\'[^\']*\' SAVE_TOKEN; return TSTRING;
+
 [ \t\n] ;
 
 "true"  SAVE_TOKEN; return TTRUE;
