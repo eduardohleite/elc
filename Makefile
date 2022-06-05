@@ -12,15 +12,11 @@ build: gen-lang
 		src/vm.cpp \
 		src/main.cpp
 
+debug-setup: gen-lang
+	meson out/debug
+
 debug-build: gen-lang
-	mkdir -p out/debug
-	g++ -Isrc -std=c++17 \
-		-g -o out/debug/elc \
-		src/gen/parser.cpp \
-		src/gen/tokens.cpp \
-		src/builtin.cpp \
-		src/vm.cpp \
-		src/main.cpp
+	ninja -C out/debug
 
 clean:
 	rm -rf out/*

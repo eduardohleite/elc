@@ -85,11 +85,8 @@ boolean    : TTRUE { $$ = new ELang::Meta::Boolean(true); delete $1; }
 string     : TSTRING { $$ = new ELang::Meta::String(*$1); delete $1; }
 
 expression : identifier TLPAREN arguments TRPAREN { $$ = new ELang::Meta::FunctionCall(*$1, *$3); delete $3; }
-           | number
-           | boolean
-           | string
-           | identifier
            | identifier TLBRACKET expression TRBRACKET { $$ = new ELang::Meta::IndexExpression(*$1, *$3); }
+           | number| boolean | string | identifier
            | expression arithmetic expression { $$ = new ELang::Meta::ArithmeticExpression(*$1, $2, *$3); }
            | expression comparison expression { $$ = new ELang::Meta::ComparisonExpression(*$1, $2, *$3); }
            | TNOT expression { $$ = new ELang::Meta::NegatedBinaryExpression(*$2); }

@@ -6,7 +6,7 @@ PLAN 11
 
 run_script() {
     local SCRIPT=$1
-    OUTPUT=$(cat ./$SCRIPT | ../out/release/elc)
+    OUTPUT=$(cat ./$SCRIPT | ../out/debug/elc)
 }
 
 # valuetypevars.e

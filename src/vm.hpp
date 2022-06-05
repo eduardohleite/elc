@@ -34,11 +34,11 @@ enum class Type {
 
 class Value {
 public:
-    Value(const long value): value(value), type(Type::Integer) { }
-    Value(const double value): value(value), type(Type::Float) { }
-    Value(const bool value): value(value), type(Type::Boolean) { }
-    Value(const std::shared_ptr<std::vector<Value>>& value): value(value), type(Type::Vector) { }
-    Value(const std::shared_ptr<std::string>& value): value(value), type(Type::String) { }
+    Value(const long value): type(Type::Integer), value(value) { }
+    Value(const double value): type(Type::Float), value(value) { }
+    Value(const bool value): type(Type::Boolean), value(value) { }
+    Value(const std::shared_ptr<std::vector<Value>>& value): type(Type::Vector), value(value) { }
+    Value(const std::shared_ptr<std::string>& value): type(Type::String), value(value) { }
 
     Value(): type(Type::Void) { }
 
@@ -51,7 +51,7 @@ public:
     Type type;
     std::string name;
 
-    Argument(const std::string& name, const Type& type): name(name), type(type) { }
+    Argument(const std::string& name, const Type& type): type(type), name(name) { }
 };
 
 class Method {
@@ -87,8 +87,8 @@ public:
     std::map<std::string, Value> variables;
     std::shared_ptr<Context> parent;
 
-    Context(): parent(nullptr), methods(), variables() { }
-    Context(std::shared_ptr<Context> parent) : parent(parent), methods(), variables() { }
+    Context(): methods(), variables(), parent(nullptr) { }
+    Context(std::shared_ptr<Context> parent) : methods(), variables(), parent(parent) { }
 
     void register_method(const std::shared_ptr<Method>& method);
     void assign_variable(const std::string& name, const Value& value, bool force_local = false);
