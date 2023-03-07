@@ -1,2 +1,4 @@
-__pycache__
-env
+out
+build
+.vscode
+src/gen/*pp
